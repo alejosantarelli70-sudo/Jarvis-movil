@@ -1,0 +1,28 @@
+
+JARVIS MOVIL - VERSION 0.1
+
+DESCRIPCION
+Prototipo inicial de un asistente personal con interfaz futurista violeta.
+
+ARCHIVOS
+- index.html: interfaz y demostracion de conversacion.
+- manifest.webmanifest: configuracion de la aplicacion web.
+- sw.js: archivo para gestionar la cache y el funcionamiento sin conexion.
+
+FUNCIONES DE DEMOSTRACION
+- Interfaz adaptable a celulares.
+- Conversacion con respuestas locales predefinidas.
+- Sintesis de voz, si el navegador la admite.
+- Reconocimiento de voz, si el navegador lo admite.
+
+LIMITACIONES
+- Todavia no esta conectado a una inteligencia artificial.
+- No tiene memoria persistente.
+- No ejecuta acciones externas.
+- No tiene activacion permanente por palabra clave.
+- El funcionamiento sin conexion requiere configuracion y pruebas.
+
+PROXIMO OBJETIVO
+Publicar el prototipo mediante HTTPS y comprobar su funcionamiento en Android.
+
+Proyecto en desarrollo.
