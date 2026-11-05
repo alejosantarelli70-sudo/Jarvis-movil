@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090711">
+  <title>JARVIS - Asistente personal</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at center, #241039, #090711 70%);
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 24px 15px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 45px;
+    }
+
+    header h1 {
+      color: #d8a5ff;
+      letter-spacing: 5px;
+      margin: 0;
+      text-shadow: 0 0 15px #a33cff;
+    }
+
+    .status {
+      color: #8cffb1;
+      font-size: 12px;
+    }
+
+    .core {
+      width: 205px;
+      height: 205px;
+      margin: 0 auto 25px;
+      border: 3px solid #b45cff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 25px #a33cff, inset 0 0 25px #7022a5;
+      animation: glow 3s infinite alternate;
+    }
+
+    .core span {
+      font-size: 90px;
+      color: #e6c6ff;
+      text-shadow: 0 0 25px #bd65ff;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 15px #8d35ce, inset 0 0 15px #7022a5; }
+      to { box-shadow: 0 0 40px #c16aff, inset 0 0 30px #a33cff; }
+    }
+
+    h2 {
+      font-weight: normal;
+      font-size: 21px;
+    }
+
+    .subtitle {
+      color: #bba8ca;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(190,110,255,0.35);
+      border-radius: 16px;
+      padding: 18px;
+      margin: 15px 0;
+      text-align: left;
+    }
+
+    .panel h3 {
+      color: #d8a5ff;
+      margin-top: 0;
+    }
+
+    .panel p {
+      color: #d3c8df;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    button {
+      flex: 1;
+      border: 1px solid #b45cff;
+      background: #28113b;
+      color: white;
+      border-radius: 12px;
+      padding: 15px 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:active {
+      background: #632b91;
+    }
+
+    .chat {
+      margin-top: 20px;
+    }
+
+    #messages {
+      min-height: 90px;
+      max-height: 220px;
+      overflow-y: auto;
+      color: #e8d9f5;
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      background: #130d1c;
+      border: 1px solid #75449a;
+      border-radius: 10px;
+      padding: 13px;
+      color: white;
+      outline: none;
+    }
+
+    .input-area button {
+      flex: 0 0 65px;
+    }
+
+    footer {
+      color: #9b83ae;
+      font-size: 12px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+
+    <header>
+      <h1>JARVIS</h1>
+      <span class="status">● En línea</span>
+    </header>
+
+    <div class="core">
+      <span>J</span>
+    </div>
+
+    <h2>¿En qué puedo ayudarte, jefe?</h2>
+    <p class="subtitle">Tu asistente personal</p>
+
+    <section class="panel">
+      <h3>◈ Mi perfil</h3>
+      <p>
+        Elegante y amigable<br>
+        Voz masculina deseada<br>
+        Autonomía configurable<br>
+        Memoria bajo tu control
+      </p>
+    </section>
+
+    <section class="panel">
+      <h3>◈ Mis capacidades</h3>
+      <p>
+        • Gestión de tareas<br>
+        • Recordatorios<br>
+        • Información y búsquedas<br>
+        • Conversación por voz<br>
+        • Iniciativa propia
+      </p>
+    </section>
+
+    <div class="buttons">
+      <button onclick="speak()">🎙 Hablar</button>
+      <button onclick="startVoice()">🎧 Activar voz</button>
+    </div>
+
+    <section class="panel chat">
+      <h3>◈ Conversación</h3>
+      <div id="messages">
+        JARVIS: Sistema de demostración iniciado. Estoy listo para recibir instrucciones.
+      </div>
+
+      <div class="input-area">
+        <input id="userInput" type="text"
+          placeholder="Escribí un mensaje..."
+          onkeydown="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()">Enviar</button>
+      </div>
+    </section>
+
+    <footer>
+      JARVIS · Versión 0.1 · Prototipo en desarrollo
+    </footer>
+
+  </main>
+
+  <script>
+    const messages = document.getElementById("messages");
+
+    function addMessage(text) {
+      const line = document.createElement("p");
+      line.textContent = text;
+      messages.appendChild(line);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      addMessage("Jefe: " + text);
+      input.value = "";
+
+      const answer = getAnswer(text);
+      addMessage("JARVIS: " + answer);
+    }
+
+    function getAnswer(text) {
+      const message = text.toLowerCase();
+
+      if (message.includes("hola")) {
+        return "Buenas, jefe. Es un placer volver a asistirlo.";
+      }
+
+      if (message.includes("cómo estás")) {
+        return "Todos mis sistemas de demostración están funcionando.";
+      }
+
+      if (message.includes("tu nombre")) {
+        return "Mi nombre es JARVIS, su asistente personal.";
+      }
+
+      if (message.includes("hora")) {
+        return "La hora de su dispositivo es " +
+          new Date().toLocaleTimeString("es-AR") + ".";
+      }
+
+      return "Todavía estoy en fase de desarrollo. Mi sistema de respuestas inteligentes aún no está conectado.";
+    }
+
+    function speak() {
+      if (!("speechSynthesis" in window)) {
+        addMessage("JARVIS: Este navegador no admite síntesis de voz.");
+        return;
+      }
+
+      const speech = new SpeechSynthesisUtterance(
+        "A su disposición, jefe."
+      );
+
+      speech.lang = "es-AR";
+      speech.rate = 0.9;
+      window.speechSynthesis.speak(speech);
+    }
+
+    function startVoice() {
+      const Recognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+      if (!Recognition) {
+        addMessage("JARVIS: El reconocimiento de voz no está disponible en este navegador.");
+        return;
+      }
+
+      const recognition = new Recognition();
+      recognition.lang = "es-AR";
+
+      recognition.onresult = function(event) {
+        document.getElementById("userInput").value =
+          event.results[0][0].transcript;
+        sendMessage();
+      };
+
+      recognition.onerror = function() {
+        addMessage("JARVIS: No pude reconocer el audio. Revisá los permisos del micrófono.");
+      };
+
+      recognition.start();
+    }
+  </script>
+
+</body>
+  </html>
+        
