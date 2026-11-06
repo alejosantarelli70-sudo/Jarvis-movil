@@ -64,8 +64,8 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+            const geminiResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/interactions",
         {
           method: "POST",
           headers: {
@@ -73,15 +73,10 @@ const server = http.createServer(async (req, res) => {
             "x-goog-api-key": process.env.GEMINI_API_KEY
           },
           body: JSON.stringify({
-            systemInstruction: {
-              parts: [{
-                text: "Tu nombre es JARVIS. Sos un asistente personal elegante, educado, sofisticado, tranquilo e inteligente. Hablás en español argentino natural. Tenés humor e ironía sutil cuando corresponde. Sos claro, profesional y respetuoso."
-              }]
-            },
-            contents: [{
-              role: "user",
-              parts: [{ text: message.trim() }]
-            }]
+            model: MODEL,
+            input: message.trim(),
+            system_instruction:
+              "Tu nombre es JARVIS. Sos un asistente personal elegante, educado, sofisticado, tranquilo e inteligente. Hablás en español argentino natural. Tenés humor e ironía sutil cuando corresponde. Sos claro, profesional y respetuoso."
           })
         }
       );
