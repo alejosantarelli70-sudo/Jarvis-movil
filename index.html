@@ -245,7 +245,8 @@
       messages.scrollTop = messages.scrollHeight;
     }
 
-    function sendMessage() {
+    
+    async function sendMessage() {
       const input = document.getElementById("userInput");
       const text = input.value.trim();
 
@@ -254,9 +255,34 @@
       addMessage("Jefe: " + text);
       input.value = "";
 
-      const answer = getAnswer(text);
-      addMessage("JARVIS: " + answer);
+      addMessage("JARVIS: Procesando...");
+
+      try {
+        const response = await fetch(
+          "https://jarvis-brain-o9gn.onrender.com/chat",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: text })
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Error de conexión");
+        }
+
+        addMessage("JARVIS: " + data.reply);
+
+      } catch (error) {
+        console.error(error);
+        addMessage("JARVIS: No pude conectarme. Inténtelo nuevamente.");
+      }
     }
+    
 
     function getAnswer(text) {
       const message = text.toLowerCase();
