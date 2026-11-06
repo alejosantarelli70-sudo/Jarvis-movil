@@ -1,0 +1,12 @@
+{
+  "name": "jarvis-brain",
+  "version": "1.0.0",
+  "description": "Backend del asistente personal JARVIS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
