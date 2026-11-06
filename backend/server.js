@@ -3,7 +3,7 @@ const http = require("http");
 
 const PORT = process.env.PORT || 3000;
 const FRONTEND = "https://alejosantarelli70-sudo.github.io";
-const MODEL = "gemini-3.8-flash";
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";;
 
 const server = http.createServer(async (req, res) => {
   const route = req.url.split("?")[0];
