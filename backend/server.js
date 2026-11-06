@@ -7,7 +7,7 @@ const server = http.createServer((req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  if (req.method === "GET" && req.url === "/health") {
+  if (req.method === "GET" && req.url.split("?")[0] === "/health") {
     res.writeHead(200);
     res.end(JSON.stringify({
       status: "online",
