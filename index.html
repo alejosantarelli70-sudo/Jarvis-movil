@@ -356,7 +356,12 @@ async function sendMessage() {
     );
 
     const data = await response.json();
-
+if (data.model) {
+  modelStatus.textContent = "◈ Modelo: " + data.model;
+} else {
+  modelStatus.textContent = "◈ Respuesta mediante sistema interno";
+}
+    
     if (!response.ok) {
       throw new Error(
         data.error || "Error de conexión"
