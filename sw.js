@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "jarvis-v0-3";
+const CACHE_NAME = "jarvis-v0-4";
 
 const FILES = [
   "./",
