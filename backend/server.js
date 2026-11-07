@@ -92,10 +92,14 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const answer = result.candidates?.[0]?.content?.parts
-        ?.map(part => part.text || "")
-        .join("")
-        .trim();
+      const answer = result.steps
+  ?.filter(step => step.type === "model_output")
+  .flatMap(step => step.content || [])
+  .filter(item => item.type === "text")
+  .map(item => item.text || "")
+  .join("")
+  .trim();
+      
 
       if (!answer) {
         res.writeHead(502);
