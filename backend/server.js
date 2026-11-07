@@ -63,6 +63,7 @@ const server = http.createServer(async (req, res) => {
 
       const data = JSON.parse(body);
       const message = data.message;
+      const previousId = data.previousInteractionId;
 
       if (typeof message !== "string" || !message.trim()) {
         res.writeHead(400);
@@ -73,7 +74,7 @@ const server = http.createServer(async (req, res) => {
       }
 
       let answer = "";
-      let lastError = null;
+      let interactionId = null;
       let successfulModel = null;
 
       const uniqueModels = [...new Set(MODELS)];
@@ -82,7 +83,18 @@ const server = http.createServer(async (req, res) => {
         try {
           console.log(`Intentando conectar con ${model}...`);
 
-          const geminiResponse = await fetch(
+          const requestBody = {
+            model,
+            input: message.trim(),
+            system_instruction: SYSTEM_INSTRUCTION,
+            store: true
+          };
+
+          if (typeof previousId === "string" && previousId.length > 0) {
+            requestBody.previous_interaction_id = previousId;
+          }
+
+          let geminiResponse = await fetch(
             "https://generativelanguage.googleapis.com/v1beta/interactions",
             {
               method: "POST",
@@ -90,21 +102,42 @@ const server = http.createServer(async (req, res) => {
                 "Content-Type": "application/json",
                 "x-goog-api-key": process.env.GEMINI_API_KEY
               },
-              body: JSON.stringify({
-                model,
-                input: message.trim(),
-                system_instruction: SYSTEM_INSTRUCTION
-              }),
+              body: JSON.stringify(requestBody),
               signal: AbortSignal.timeout(45000)
             }
           );
 
-          const result = await geminiResponse.json();
+          let result = await geminiResponse.json();
+
+          // Si el identificador anterior venció,
+          // iniciar una conversación nueva.
+          if (
+            !geminiResponse.ok &&
+            geminiResponse.status === 400 &&
+            requestBody.previous_interaction_id
+          ) {
+            console.log("El contexto anterior no está disponible. Iniciando conversación nueva.");
+
+            delete requestBody.previous_interaction_id;
+
+            geminiResponse = await fetch(
+              "https://generativelanguage.googleapis.com/v1beta/interactions",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-goog-api-key": process.env.GEMINI_API_KEY
+                },
+                body: JSON.stringify(requestBody),
+                signal: AbortSignal.timeout(45000)
+              }
+            );
+
+            result = await geminiResponse.json();
+          }
 
           if (!geminiResponse.ok) {
             console.error(`Error de ${model}:`, result);
-
-            lastError = result;
 
             if ([429, 500, 502, 503, 504].includes(geminiResponse.status)) {
               continue;
@@ -123,14 +156,13 @@ const server = http.createServer(async (req, res) => {
 
           if (answer) {
             successfulModel = model;
+            interactionId = result.id || null;
             break;
           }
 
-          lastError = "El modelo no devolvió texto.";
-          console.error(lastError);
+          console.error("El modelo no devolvió texto.");
 
         } catch (error) {
-          lastError = error;
           console.error(`Fallo en ${model}:`, error.message);
         }
       }
@@ -148,7 +180,8 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200);
       res.end(JSON.stringify({
         assistant: "JARVIS",
-        reply: answer
+        reply: answer,
+        interactionId
       }));
 
     } catch (error) {
@@ -172,4 +205,3 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`JARVIS escuchando en el puerto ${PORT}`);
 });
-
