@@ -140,7 +140,10 @@ const contextoTemporal =
 
 const requestBody = {
   model,
-  input: contextoTemporal + message.trim(),
+input:
+  contextoTemporal +
+  `\n[MODELO DE INTELIGENCIA ACTUAL: ${model}. Si el jefe pregunta qué modelo estás utilizando, respondé con este nombre exacto. No inventes otro modelo.]\n\n` +
+  message.trim(),
   system_instruction: SYSTEM_INSTRUCTION,
   store: true
 };
