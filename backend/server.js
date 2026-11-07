@@ -30,6 +30,21 @@ const SYSTEM_INSTRUCTION =
 
 
 const server = http.createServer(async (req, res) => {
+    // Reloj interno de JARVIS
+  const ahora = new Date();
+
+  const horaActual = ahora.toLocaleTimeString("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+  });
+
+  const fechaActual = ahora.toLocaleDateString("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    dateStyle: "full"
+  });
   const route = req.url.split("?")[0];
 
   res.setHeader("Access-Control-Allow-Origin", FRONTEND);
