@@ -235,9 +235,10 @@ const requestBody = {
 
       res.writeHead(200);
       res.end(JSON.stringify({
-        assistant: "JARVIS",
-        reply: answer,
-        interactionId
+  assistant: "JARVIS",
+  reply: answer,
+  interactionId,
+  model: successfulModel
       }));
 
     } catch (error) {
