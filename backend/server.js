@@ -77,9 +77,13 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
-      const data = JSON.parse(body);
-      const message = data.message;
-      const previousId = data.previousInteractionId;
+      
+const data = JSON.parse(body);
+const message = data.message;
+const previousId = data.previousInteractionId;
+const fechaHoraLocal = data.fechaHoraLocal;
+const zonaHoraria = data.zonaHoraria;
+
 
       if (typeof message !== "string" || !message.trim()) {
         res.writeHead(400);
