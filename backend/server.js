@@ -94,6 +94,19 @@ const server = http.createServer(async (req, res) => {
 
       
 const data = JSON.parse(body);
+      
+      const consultaHora = /\b(qué hora es|que hora es|decime la hora|dime la hora|hora actual|qué día es hoy|que dia es hoy|fecha de hoy)\b/i.test(data.message || "");
+
+      if (consultaHora) {
+        res.writeHead(200);
+        res.end(JSON.stringify({
+          assistant: "JARVIS",
+          reply: `En este momento son las ${horaActual}, señor. Hoy es ${fechaActual}.`,
+          interactionId: null
+        }));
+        return;
+      }
+      
 const message = data.message;
 const previousId = data.previousInteractionId;
 const fechaHoraLocal = data.fechaHoraLocal;
