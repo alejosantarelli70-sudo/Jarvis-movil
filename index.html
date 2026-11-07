@@ -313,7 +313,7 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-// Enviar mensaje a JARVIS
+//enviar mensajes a Jarvis
 async function sendMessage() {
   if (sending) return;
 
@@ -387,6 +387,7 @@ async function sendMessage() {
     sending = false;
   }
 }
+
 
 // Mostrar historial al abrir la página
 renderConversation();
