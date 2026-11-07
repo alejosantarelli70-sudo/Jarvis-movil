@@ -175,6 +175,14 @@
       <h1>JARVIS</h1>
       <span class="status">● En línea</span>
     </header>
+    <p id="modelStatus" style="
+  color: #bba8ca;
+  font-size: 12px;
+  margin-top: -30px;
+  margin-bottom: 25px;
+">
+  ◈ Modelo: esperando conexión...
+    </p>
 
     <div class="core">
       <span>J</span>
@@ -234,7 +242,8 @@ const INTERACTION_KEY = "jarvis_interaction_id";
 
 const messages = document.getElementById("messages");
 const input = document.getElementById("userInput");
-
+const modelStatus = document.getElementById("modelStatus");
+  
 let conversation = [];
 let previousInteractionId = null;
 let sending = false;
