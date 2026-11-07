@@ -103,12 +103,20 @@ const zonaHoraria = data.zonaHoraria;
         try {
           console.log(`Intentando conectar con ${model}...`);
 
-          const requestBody = {
-            model,
-            input: message.trim(),
-            system_instruction: SYSTEM_INSTRUCTION,
-            store: true
-          };
+          
+const contextoTemporal =
+  typeof fechaHoraLocal === "string" &&
+  typeof zonaHoraria === "string"
+    ? `\n\n[FECHA Y HORA ACTUAL DEL DISPOSITIVO: ${fechaHoraLocal}. ZONA HORARIA: ${zonaHoraria}. Utilizá estos datos si el jefe pregunta la fecha o la hora.]\n\n`
+    : "";
+
+const requestBody = {
+  model,
+  input: contextoTemporal + message.trim(),
+  system_instruction: SYSTEM_INSTRUCTION,
+  store: true
+};
+
 
           if (typeof previousId === "string" && previousId.length > 0) {
             requestBody.previous_interaction_id = previousId;
