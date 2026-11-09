@@ -39,6 +39,12 @@
     input,select,textarea{width:100%;background:#100a19;border:1px solid #5d4077;border-radius:11px;padding:12px;color:#fff;outline:none;margin:6px 0}input:focus,textarea:focus,select:focus{border-color:#ad7be5;box-shadow:0 0 0 3px rgba(169,120,232,.1)}
     .panel{padding:20px;margin:16px 0;text-align:left}.panel h3{color:#d8b5ff;margin:0 0 10px;font-weight:500}.panel p{color:#d3c8df;font-size:14px;line-height:1.6}.auth-panel{max-width:430px;margin:50px auto}.auth-panel label,.memory-form label{color:#d3c8df;font-size:13px;display:block;margin-top:10px}.auth-panel button{width:100%;margin-top:12px}.auth-message{min-height:22px;color:#ffb4c0;font-size:13px;line-height:1.4}
     #modelStatus{color:var(--muted);font-size:11px;text-align:center;margin:12px 0}.memory-note{color:var(--muted);font-size:12px;line-height:1.5}.memory-form select,.memory-form textarea{font:inherit}.memory-form textarea{min-height:85px;resize:vertical}#memoryList{max-height:420px;overflow-y:auto}.memory-item{background:rgba(20,10,30,.72);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;overflow-wrap:anywhere}.memory-item h4{color:#e6c6ff;margin:0 0 6px}.memory-meta{color:var(--muted);font-size:11px;margin-bottom:7px}.memory-content{color:#eee5f5;font-size:13px;line-height:1.5;white-space:pre-wrap}.memory-status{color:#ffd58a;font-size:11px;margin-top:8px}.memory-status.approved{color:var(--green)}.memory-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.memory-actions button{flex:1 1 100px;padding:10px;font-size:12px}.memory-notice{border:1px solid #a978e8;background:rgba(86,35,120,.28);border-radius:14px;padding:13px;margin:12px auto;max-width:680px;color:#f0ddff;text-align:left;font-size:13px;line-height:1.5}.memory-notice button{width:100%;margin-top:9px;padding:10px}.memory-status.approved{color:var(--green)}#memoryPanel{margin-top:16px}#toggleMemoryButton{margin-top:5px}.footer{color:#8f7da3;font-size:11px;text-align:center;margin:25px 0 5px}.account-bar button{flex:0 0 auto}
+    .source-list{margin:8px 0 14px 13px;padding:10px 13px;border-left:2px solid var(--theme-accent);background:rgba(93,59,125,.10);border-radius:0 10px 10px 0}
+    .source-heading{margin:0 0 7px;color:var(--muted);font-size:11px;letter-spacing:.7px}
+    .source-list ul{margin:0;padding-left:18px}
+    .source-list li{margin:5px 0;font-size:12px;overflow-wrap:anywhere}
+    .source-link{color:var(--theme-accent);text-decoration:underline;text-underline-offset:3px}
+    .source-link:hover{opacity:.8}
     [hidden]{display:none!important}
     @media(min-width:800px){.dashboard{padding-top:30px}.hero{min-height:420px}.core{width:290px;height:290px}.reply-card{padding:18px 22px}.nav{justify-content:space-evenly}}
     @media(max-width:520px){body{padding:12px 10px 24px}.topbar{padding:10px 12px;border-radius:16px}.brand-mark{width:36px;height:36px}.brand h1{letter-spacing:3px}.top-meta{font-size:10px}.hero{min-height:330px;padding-top:14px}.core{width:220px;height:220px;margin-bottom:12px}.reply-card{padding:13px}.controls{gap:8px}.controls button{min-width:calc(50% - 8px);flex:1}.nav{gap:2px;padding:8px}.nav button{padding:9px 8px;font-size:12px}.panel{padding:15px}.input-area button{min-width:76px;padding:11px 12px}}
@@ -91,9 +97,8 @@
         <div class="core-state" id="coreState">● Sistema en reposo</div>
         <h2 class="welcome">A su disposición, jefe.</h2>
         <p class="subtitle">¿En qué puedo ayudarle hoy?</p>
-      </div>
-
-      <section class="reply-card" aria-live="polite">
+        </div>
+              <section class="reply-card" aria-live="polite">
         <div class="reply-icon">J</div><div><div class="reply-label">ÚLTIMA RESPUESTA · JARVIS</div><div class="reply-text" id="lastReply">Sistema operativo. Estoy listo para recibir instrucciones.</div></div>
       </section>
 
@@ -172,17 +177,21 @@
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ARHruWzLM683VoD8q_6cOQ_f5q1EtVW";
     const BACKEND_URL = "https://jarvis-brain-o9gn.onrender.com";
 
-    const supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
+   let supabaseClient = null;
+
+if (window.supabase) {
+  supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
       }
-    );
+    }
+  );
+}
 
     const loginPanel = document.getElementById("loginPanel");
     const assistantPanel = document.getElementById("assistantPanel");
@@ -192,7 +201,7 @@
     const connectionStatus = document.getElementById("connectionStatus");
     const accountEmail = document.getElementById("accountEmail");
     const logoutButton = document.getElementById("logoutButton");
-    const messages = document.getElementById("messages");
+        const messages = document.getElementById("messages");
     const input = document.getElementById("userInput");
     const modelStatus = document.getElementById("modelStatus");
     const sendButton = document.getElementById("sendButton");
@@ -261,7 +270,7 @@
       Object.entries(appearanceInputs).forEach(([key, control]) => { control.value = safe[key]; });
       if (appearanceMessage) appearanceMessage.textContent = `Tema actual: ${label}. Los cambios se guardaron en este dispositivo.`;
       if (save) { try { localStorage.setItem(APPEARANCE_KEY, JSON.stringify({ ...safe, label })); } catch (error) { console.warn("No pude guardar la apariencia:", error); } }
-    
+
     }
     function loadAppearance() {
       try { const saved = JSON.parse(localStorage.getItem(APPEARANCE_KEY) || "null"); if (saved && typeof saved === "object") { applyAppearance(saved, false, saved.label || "Personalizado"); return; } }
@@ -292,7 +301,7 @@
       try {
         if (!localStorage.getItem(STORAGE_KEY)) {
           const oldConversation = localStorage.getItem("jarvis_conversation");
-          if (oldConversation) localStorage.setItem(STORAGE_KEY, oldConversation);
+                    if (oldConversation) localStorage.setItem(STORAGE_KEY, oldConversation);
         }
         if (!localStorage.getItem(INTERACTION_KEY)) {
           const oldInteraction = localStorage.getItem("jarvis_interaction_id");
@@ -353,6 +362,60 @@
       if (conversation.length > 200) conversation = conversation.slice(-200);
       saveConversation();
       renderConversation();
+    }
+
+
+    // Mostrar las fuentes que devuelve el servidor, sin insertar HTML externo.
+    function showSources(sources) {
+      if (!Array.isArray(sources) || sources.length === 0) return;
+
+      const validSources = sources.map(source => {
+        if (typeof source === "string") {
+          return { title: source, url: source };
+        }
+        if (!source || typeof source !== "object") return null;
+
+        const rawUrl = source.url?.uri || source.url || source.uri || source.link;
+        const title = source.title || source.name || source.label || rawUrl;
+        if (typeof rawUrl !== "string" || typeof title !== "string") return null;
+
+        return { title, url: rawUrl };
+      }).filter(source => {
+        if (!source || !source.url) return false;
+        try {
+          const parsed = new URL(source.url);
+          return parsed.protocol === "https:" || parsed.protocol === "http:";
+        } catch {
+          return false;
+        }
+      });
+
+      if (validSources.length === 0) return;
+
+      const section = document.createElement("section");
+      section.className = "source-list";
+
+      const heading = document.createElement("p");
+      heading.className = "source-heading";
+      heading.textContent = "FUENTES CONSULTADAS";
+      section.appendChild(heading);
+
+      const list = document.createElement("ul");
+            validSources.forEach(source => {
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.className = "source-link";
+        link.textContent = source.title;
+        link.href = source.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        item.appendChild(link);
+        list.appendChild(item);
+      });
+
+      section.appendChild(list);
+      messages.appendChild(section);
+      messages.scrollTop = messages.scrollHeight;
     }
 
     function showLogin(message = "") {
@@ -437,8 +500,7 @@
         status.textContent = memory.approved ? "✓ Aprobado: JARVIS puede utilizar este recuerdo." : "◷ Pendiente: JARVIS todavía no lo utiliza como recuerdo permanente.";
 
         card.append(heading, meta, content, status);
-
-        const actions = document.createElement("div");
+                const actions = document.createElement("div");
         actions.className = "memory-actions";
 
         if (!memory.approved) {
@@ -538,7 +600,7 @@
 
       try {
         await memoryRequest("/memories", {
-          method: "POST",
+                    method: "POST",
           body: JSON.stringify({
             category: memoryCategory.value,
             title: memoryTitle.value.trim(),
@@ -635,10 +697,10 @@
       });
     }
 
-  
+
     // Núcleo holográfico 2D: orbe circular de energía.
     // Superficie continua, sin líneas ni estructuras geométricas.
-    const jarvisCore = document.getElementById("jarvisCore");
+        const jarvisCore = document.getElementById("jarvisCore");
     const coreCanvas = document.getElementById("coreCanvas");
     const coreCtx = coreCanvas ? coreCanvas.getContext("2d") : null;
 
@@ -738,8 +800,7 @@
       ctx.arc(0, 0, radius, 0, Math.PI * 2);
       ctx.fillStyle = orb;
       ctx.fill();
-
-      // Todo el movimiento queda dentro del círculo.
+            // Todo el movimiento queda dentro del círculo.
       ctx.save();
 
       ctx.beginPath();
@@ -870,6 +931,7 @@
 
         processing.remove();
         addMessage("JARVIS: " + data.reply);
+        showSources(data.sources);
         setCoreMode("idle", "● Sistema en reposo");
       } catch (error) {
         console.error("Error de JARVIS:", error);
