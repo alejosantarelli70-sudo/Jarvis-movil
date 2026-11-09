@@ -163,6 +163,7 @@
       font-size: 12px;
     }
 
+
     .memory-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
     .memory-actions button { flex: 1 1 100px; padding: 10px; font-size: 12px; }
     .memory-item {
@@ -187,6 +188,23 @@
     .memory-form textarea { min-height: 85px; resize: vertical; }
     .memory-note { color: #bba8ca; font-size: 12px; line-height: 1.5; }
     #memoryList { max-height: 420px; overflow-y: auto; }
+
+    .memory-notice {
+      border: 1px solid #b45cff;
+      background: rgba(86, 35, 120, 0.35);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 12px 0;
+      color: #f0ddff;
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .memory-notice button {
+      width: 100%;
+      margin-top: 9px;
+      padding: 10px;
+    }
 
     footer { color: #9b83ae; font-size: 12px; margin-top: 30px; }
     [hidden] { display: none !important; }
@@ -281,6 +299,11 @@
         <button type="button" onclick="startVoice()">🎧 Activar voz</button>
       </div>
 
+      <div id="memoryNotice" class="memory-notice" role="status" aria-live="polite" hidden>
+        <span id="memoryNoticeText">JARVIS detectó una posible información para recordar.</span>
+        <button type="button" id="openMemoryFromNotice">Revisar propuesta en Memoria</button>
+      </div>
+
       <section class="panel chat">
         <h3>◈ Conversación</h3>
         <div id="messages"></div>
@@ -335,6 +358,9 @@
     const memoryMessage = document.getElementById("memoryMessage");
     const memoryList = document.getElementById("memoryList");
     const refreshMemoryButton = document.getElementById("refreshMemoryButton");
+    const memoryNotice = document.getElementById("memoryNotice");
+    const memoryNoticeText = document.getElementById("memoryNoticeText");
+    const openMemoryFromNotice = document.getElementById("openMemoryFromNotice");
 
     let currentUser = null;
     let conversation = [];
@@ -426,6 +452,7 @@
       connectionStatus.textContent = "● Sesión protegida";
       authMessage.textContent = "";
     }
+
 
     async function memoryRequest(path, options = {}) {
       const { data: sessionData, error: sessionError } =
@@ -565,6 +592,22 @@
     });
 
     refreshMemoryButton.addEventListener("click", loadMemories);
+
+    openMemoryFromNotice.addEventListener("click", async () => {
+      memoryPanel.hidden = false;
+      toggleMemoryButton.textContent = "Cerrar memoria";
+      await loadMemories();
+      memoryPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    function showMemorySuggestionNotice(suggestions) {
+      if (!Array.isArray(suggestions) || suggestions.length === 0) return;
+      const count = suggestions.length;
+      memoryNoticeText.textContent = count === 1
+        ? "JARVIS detectó una posible información para recordar y creó una propuesta pendiente. Revisala antes de aprobarla."
+        : "JARVIS detectó " + count + " posibles datos para recordar y creó propuestas pendientes. Revisalas antes de aprobarlas.";
+      memoryNotice.hidden = false;
+    }
 
     memoryForm.addEventListener("submit", async event => {
       event.preventDefault();
@@ -719,6 +762,7 @@
         }
 
         modelStatus.textContent = "◈ Modelo: " + (data.model || "no informado");
+        showMemorySuggestionNotice(data.memorySuggestions);
 
         if (data.interactionId) {
           previousInteractionId = data.interactionId;
@@ -791,4 +835,3 @@
     initialize();
   </script>
 </body>
-</html>
