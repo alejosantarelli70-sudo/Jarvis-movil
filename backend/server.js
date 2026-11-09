@@ -238,41 +238,8 @@ async function detectAndCreateMemorySuggestions(userId, message, model) {
 
     for (const candidate of candidates) {
       if (
-        !candidate ||
-        typeof candidate.title !== "string" ||
-        typeof candidate.content !== "string" ||
-        typeof candidate.category !== "string" ||
-        !allowedCategories.has(candidate.category) ||
-        !isSafeMemoryCandidate(candidate)
-      ) continue;
 
-      const created = await supabaseMemoryRequest("jarvis_memories", {
-        method: "POST",
-        headers: {
-          "Prefer": "return=representation"
-        },
-        body: JSON.stringify([{
-          user_id: userId,
-          category: candidate.category,
-          title: candidate.title.slice(0, 120),
-          content: candidate.content.slice(0, 1000),
-          approved: false
-        }])
-      });
-
-      if (Array.isArray(created) && created[0]) {
-        createdSuggestions.push(created[0]);
-      }
-    }
-
-    return createdSuggestions;
-  } catch (error) {
-    console.error("No se pudieron generar sugerencias de memoria:", error.message);
-    return [];
-  }
-}
-
-        !candidate ||
+                !candidate ||
         !allowedCategories.has(candidate.category) ||
         !isValidText(candidate.title, 120) ||
         !isValidText(candidate.content, 1000) ||
@@ -513,7 +480,7 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-                                   if (req.method === "POST" && route === "/chat") {
+    if (req.method === "POST" && route === "/chat") {
     try {
       const authenticatedUser = await authenticateRequest(req, res);
       if (!authenticatedUser) return;
@@ -737,3 +704,4 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`JARVIS escuchando en el puerto ${PORT}`);
 });
+
