@@ -261,7 +261,7 @@
       Object.entries(appearanceInputs).forEach(([key, control]) => { control.value = safe[key]; });
       if (appearanceMessage) appearanceMessage.textContent = `Tema actual: ${label}. Los cambios se guardaron en este dispositivo.`;
       if (save) { try { localStorage.setItem(APPEARANCE_KEY, JSON.stringify({ ...safe, label })); } catch (error) { console.warn("No pude guardar la apariencia:", error); } }
-      if (typeof drawCore === "function" && coreCtx) drawCore();
+    
     }
     function loadAppearance() {
       try { const saved = JSON.parse(localStorage.getItem(APPEARANCE_KEY) || "null"); if (saved && typeof saved === "object") { applyAppearance(saved, false, saved.label || "Personalizado"); return; } }
