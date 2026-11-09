@@ -8,214 +8,44 @@
   <title>JARVIS - Asistente personal</title>
 
   <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(circle at center, #241039, #090711 70%);
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      padding: 24px 15px;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 35px;
-    }
-
-    header h1 {
-      color: #d8a5ff;
-      letter-spacing: 5px;
-      margin: 0;
-      text-shadow: 0 0 15px #a33cff;
-    }
-
-    .status { color: #8cffb1; font-size: 12px; }
-
-    .core {
-      width: 205px;
-      height: 205px;
-      margin: 0 auto 25px;
-      border: 3px solid #b45cff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 25px #a33cff, inset 0 0 25px #7022a5;
-      animation: glow 3s infinite alternate;
-    }
-
-    .core span {
-      font-size: 90px;
-      color: #e6c6ff;
-      text-shadow: 0 0 25px #bd65ff;
-    }
-
-    @keyframes glow {
-      from { box-shadow: 0 0 15px #8d35ce, inset 0 0 15px #7022a5; }
-      to { box-shadow: 0 0 40px #c16aff, inset 0 0 30px #a33cff; }
-    }
-
-    h2 { font-weight: normal; font-size: 21px; }
-
-    .subtitle {
-      color: #bba8ca;
-      font-size: 14px;
-      margin-bottom: 30px;
-    }
-
-    .panel {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(190,110,255,0.35);
-      border-radius: 16px;
-      padding: 18px;
-      margin: 15px 0;
-      text-align: left;
-    }
-
-    .panel h3 { color: #d8a5ff; margin-top: 0; }
-
-    .panel p {
-      color: #d3c8df;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .buttons { display: flex; gap: 12px; margin: 22px 0; }
-
-    button {
-      flex: 1;
-      border: 1px solid #b45cff;
-      background: #28113b;
-      color: white;
-      border-radius: 12px;
-      padding: 15px 8px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    button:active { background: #632b91; }
-    button:disabled { opacity: 0.55; cursor: wait; }
-
-    input {
-      width: 100%;
-      min-width: 0;
-      background: #130d1c;
-      border: 1px solid #75449a;
-      border-radius: 10px;
-      padding: 13px;
-      color: white;
-      outline: none;
-      margin: 6px 0;
-    }
-
-    .auth-panel { max-width: 430px; margin: 35px auto; }
-    .auth-panel label { color: #d3c8df; font-size: 13px; display: block; margin-top: 10px; }
-    .auth-panel button { width: 100%; margin-top: 12px; }
-    .auth-message { min-height: 22px; color: #ffb4c0; font-size: 13px; line-height: 1.4; }
-
-    #modelStatus {
-      color: #bba8ca;
-      font-size: 12px;
-      margin-top: -20px;
-      margin-bottom: 25px;
-    }
-
-    #messages {
-      min-height: 90px;
-      max-height: 220px;
-      overflow-y: auto;
-      color: #e8d9f5;
-      font-size: 14px;
-      line-height: 1.6;
-      text-align: left;
-    }
-
-    .input-area { display: flex; gap: 8px; margin-top: 12px; }
-    .input-area input { flex: 1; margin: 0; }
-    .input-area button { flex: 0 0 75px; }
-
-    .account-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      color: #bba8ca;
-      font-size: 12px;
-      margin: 12px 0 20px;
-      overflow-wrap: anywhere;
-    }
-
-    .account-bar button {
-      flex: 0 0 auto;
-      padding: 9px 12px;
-      font-size: 12px;
-    }
-
-
-    .memory-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-    .memory-actions button { flex: 1 1 100px; padding: 10px; font-size: 12px; }
-    .memory-item {
-      background: rgba(20, 10, 30, 0.72);
-      border: 1px solid rgba(190,110,255,0.25);
-      border-radius: 12px;
-      padding: 12px;
-      margin: 10px 0;
-      overflow-wrap: anywhere;
-    }
-    .memory-item h4 { color: #e6c6ff; margin: 0 0 6px; }
-    .memory-meta { color: #bba8ca; font-size: 11px; margin-bottom: 7px; }
-    .memory-content { color: #eee5f5; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
-    .memory-status { color: #ffd58a; font-size: 11px; margin-top: 8px; }
-    .memory-status.approved { color: #8cffb1; }
-    .memory-form label { color: #d3c8df; display: block; font-size: 12px; margin-top: 9px; }
-    .memory-form select, .memory-form textarea {
-      width: 100%; background: #130d1c; color: white;
-      border: 1px solid #75449a; border-radius: 10px;
-      padding: 11px; margin-top: 5px; font: inherit;
-    }
-    .memory-form textarea { min-height: 85px; resize: vertical; }
-    .memory-note { color: #bba8ca; font-size: 12px; line-height: 1.5; }
-    #memoryList { max-height: 420px; overflow-y: auto; }
-
-    .memory-notice {
-      border: 1px solid #b45cff;
-      background: rgba(86, 35, 120, 0.35);
-      border-radius: 12px;
-      padding: 12px;
-      margin: 12px 0;
-      color: #f0ddff;
-      text-align: left;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    .memory-notice button {
-      width: 100%;
-      margin-top: 9px;
-      padding: 10px;
-    }
-
-    footer { color: #9b83ae; font-size: 12px; margin-top: 30px; }
-    [hidden] { display: none !important; }
+    :root{--bg:#080610;--panel:rgba(22,13,37,.78);--panel2:rgba(15,9,25,.92);--line:rgba(169,120,232,.25);--violet:#a978e8;--glow:#8b4bd0;--text:#f2eafa;--muted:#b9a9ca;--green:#8cffb1}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 22%,#211333 0%,#100a1b 38%,var(--bg) 76%);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;padding:22px 16px 34px}
+    button,input,select,textarea{font:inherit}button{border:1px solid rgba(169,120,232,.42);background:linear-gradient(145deg,#28163d,#160e24);color:#f7edff;border-radius:14px;padding:12px 15px;cursor:pointer;transition:.2s}button:hover{border-color:#bd91f4;box-shadow:0 0 18px rgba(139,75,208,.18)}button:active{transform:translateY(1px)}button:disabled{opacity:.55;cursor:wait}
+    .app{width:min(100%,1050px);margin:auto}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 18px;border:1px solid var(--line);border-radius:20px;background:rgba(8,6,16,.72);box-shadow:0 12px 42px rgba(0,0,0,.25);backdrop-filter:blur(16px)}
+    .brand{display:flex;align-items:center;gap:13px}.brand-mark{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#e6ccff;border:1px solid #8756ba;box-shadow:0 0 20px #552b7a,inset 0 0 16px #482365;font-size:20px}.brand h1{margin:0;letter-spacing:5px;font-size:clamp(22px,4vw,30px);font-weight:600;color:#e3c9ff;text-shadow:0 0 18px #71439b}.brand small{display:block;color:var(--muted);letter-spacing:2px;font-size:10px;margin-top:3px}.top-meta{text-align:right;color:var(--muted);font-size:12px}.status{color:var(--green);display:block;margin-bottom:5px}
+    #loginPanel{max-width:460px;margin:70px auto}
+    .dashboard{padding:24px 0 0}.account-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:0 3px 12px;overflow-wrap:anywhere}.account-bar button{padding:8px 12px;font-size:12px}
+    .hero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 12px 10px;min-height:370px;overflow:hidden}.hero:before{content:"";position:absolute;width:440px;height:300px;top:38px;border-radius:50%;background:radial-gradient(ellipse,rgba(99,48,145,.18),transparent 68%);pointer-events:none}
+    .core{position:relative;width:230px;height:230px;margin:8px auto 22px;border-radius:50%;display:grid;place-items:center;isolation:isolate;filter:drop-shadow(0 0 24px rgba(153,91,220,.3));animation:float 5s ease-in-out infinite}
+    .core:before,.core:after{content:"";position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(184,135,240,.45);box-shadow:0 0 24px rgba(139,75,208,.18),inset 0 0 28px rgba(130,70,180,.12)}
+    .core:after{inset:25px;border-color:rgba(203,167,246,.32);animation:spin 24s linear infinite}
+    .core-orb{width:160px;height:160px;border-radius:50%;position:relative;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.95) 0%,rgba(214,178,255,.82) 5%,rgba(153,93,212,.72) 18%,rgba(74,34,110,.78) 48%,rgba(14,8,25,.98) 74%);box-shadow:inset -16px -18px 32px #080510,inset 8px 8px 24px rgba(255,255,255,.24),0 0 22px #7541a5,0 0 65px rgba(133,69,190,.35);overflow:hidden}
+    .core-orb:before{content:"";position:absolute;inset:15% -20%;border:2px solid rgba(220,188,255,.7);border-radius:50%;transform:rotate(-28deg);filter:blur(.3px);box-shadow:0 0 15px #b77cff}
+    .core-orb:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 25%,rgba(221,190,255,.2) 48%,transparent 58%);animation:shimmer 4s ease-in-out infinite}
+    .core-state{font-size:10px;letter-spacing:3px;color:#c9afdF;text-transform:uppercase;margin-top:2px}
+    @keyframes float{50%{transform:translateY(-7px)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes shimmer{50%{transform:translateX(18px);opacity:.45}}
+    .welcome{font-size:clamp(20px,3vw,26px);font-weight:400;margin:0 0 7px}.subtitle{color:var(--muted);font-size:13px;margin:0}
+    .reply-card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(16px);box-shadow:0 12px 34px rgba(0,0,0,.18)}.reply-card{max-width:680px;width:100%;margin:18px auto 22px;padding:16px 20px;text-align:left;display:flex;gap:13px;align-items:flex-start}.reply-icon{width:30px;height:30px;flex:0 0 30px;border-radius:50%;display:grid;place-items:center;border:1px solid #8052ac;color:#d9b9ff;box-shadow:0 0 14px #482568}.reply-label{font-size:11px;color:#c99cff;letter-spacing:1.5px;margin-bottom:5px}.reply-text{font-size:14px;line-height:1.55;color:#eee3f7;overflow-wrap:anywhere}
+    .controls{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:12px 0 26px}.controls button{min-width:145px;padding:14px 18px}.controls .primary{background:linear-gradient(145deg,#49236b,#241333);border-color:#a978e8;box-shadow:0 0 22px rgba(139,75,208,.18)}
+    .nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(10,7,17,.72)}.nav button{background:transparent;border-color:transparent;color:#c9b7dc;padding:10px 15px}.nav button:hover{background:rgba(126,75,169,.12);border-color:var(--line)}
+    .chat-drawer{margin:18px auto;max-width:850px;border:1px solid rgba(169,120,232,.38);border-radius:20px;background:var(--panel2);overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.3)}.chat-drawer summary{cursor:pointer;list-style:none;padding:16px 20px;color:#d8b9fa;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center}.chat-drawer summary::-webkit-details-marker{display:none}.chat-drawer summary:after{content:"＋";font-size:20px;color:#c99cff}.chat-drawer[open] summary:after{content:"−"}.chat-content{padding:0 18px 18px;border-top:1px solid var(--line)}
+    #messages{min-height:100px;max-height:390px;overflow-y:auto;color:#e8d9f5;font-size:14px;line-height:1.65;text-align:left;padding:10px 4px}#messages p{padding:10px 13px;border-radius:12px;background:rgba(93,59,125,.13);border:1px solid rgba(169,120,232,.12);overflow-wrap:anywhere}.input-area{display:flex;gap:9px;margin-top:12px}.input-area input{flex:1;min-width:0}.input-area button{flex:0 0 auto;min-width:90px}
+    input,select,textarea{width:100%;background:#100a19;border:1px solid #5d4077;border-radius:11px;padding:12px;color:#fff;outline:none;margin:6px 0}input:focus,textarea:focus,select:focus{border-color:#ad7be5;box-shadow:0 0 0 3px rgba(169,120,232,.1)}
+    .panel{padding:20px;margin:16px 0;text-align:left}.panel h3{color:#d8b5ff;margin:0 0 10px;font-weight:500}.panel p{color:#d3c8df;font-size:14px;line-height:1.6}.auth-panel{max-width:430px;margin:50px auto}.auth-panel label,.memory-form label{color:#d3c8df;font-size:13px;display:block;margin-top:10px}.auth-panel button{width:100%;margin-top:12px}.auth-message{min-height:22px;color:#ffb4c0;font-size:13px;line-height:1.4}
+    #modelStatus{color:var(--muted);font-size:11px;text-align:center;margin:12px 0}.memory-note{color:var(--muted);font-size:12px;line-height:1.5}.memory-form select,.memory-form textarea{font:inherit}.memory-form textarea{min-height:85px;resize:vertical}#memoryList{max-height:420px;overflow-y:auto}.memory-item{background:rgba(20,10,30,.72);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;overflow-wrap:anywhere}.memory-item h4{color:#e6c6ff;margin:0 0 6px}.memory-meta{color:var(--muted);font-size:11px;margin-bottom:7px}.memory-content{color:#eee5f5;font-size:13px;line-height:1.5;white-space:pre-wrap}.memory-status{color:#ffd58a;font-size:11px;margin-top:8px}.memory-status.approved{color:var(--green)}.memory-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.memory-actions button{flex:1 1 100px;padding:10px;font-size:12px}.memory-notice{border:1px solid #a978e8;background:rgba(86,35,120,.28);border-radius:14px;padding:13px;margin:12px auto;max-width:680px;color:#f0ddff;text-align:left;font-size:13px;line-height:1.5}.memory-notice button{width:100%;margin-top:9px;padding:10px}.memory-status.approved{color:var(--green)}#memoryPanel{margin-top:16px}#toggleMemoryButton{margin-top:5px}.footer{color:#8f7da3;font-size:11px;text-align:center;margin:25px 0 5px}.account-bar button{flex:0 0 auto}
+    [hidden]{display:none!important}
+    @media(min-width:800px){.dashboard{padding-top:30px}.hero{min-height:420px}.core{width:270px;height:270px}.core-orb{width:190px;height:190px}.reply-card{padding:18px 22px}.nav{justify-content:space-evenly}}
+    @media(max-width:520px){body{padding:12px 10px 24px}.topbar{padding:10px 12px;border-radius:16px}.brand-mark{width:36px;height:36px}.brand h1{letter-spacing:3px}.top-meta{font-size:10px}.hero{min-height:330px;padding-top:14px}.core{width:205px;height:205px;margin-bottom:15px}.core-orb{width:145px;height:145px}.reply-card{padding:13px}.controls{gap:8px}.controls button{min-width:calc(50% - 8px);flex:1}.nav{gap:2px;padding:8px}.nav button{padding:9px 8px;font-size:12px}.panel{padding:15px}.input-area button{min-width:76px;padding:11px 12px}}
   </style>
 </head>
 
 <body>
   <main class="app">
-    <header>
-      <h1>JARVIS</h1>
-      <span class="status" id="connectionStatus">● Verificando sesión</span>
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark">◈</div><div><h1>JARVIS</h1><small>ASISTENTE PERSONAL</small></div></div>
+      <div class="top-meta"><span class="status" id="connectionStatus">● Verificando sesión</span><span id="localClock">Sistema personal</span></div>
     </header>
 
     <section class="panel auth-panel" id="loginPanel" hidden>
@@ -232,71 +62,25 @@
       <p style="font-size:12px;color:#9b83ae;">El acceso está limitado a usuarios autorizados.</p>
     </section>
 
-    <section id="assistantPanel" hidden>
-      <div class="account-bar">
-        <span id="accountEmail"></span>
-        <button type="button" id="logoutButton">Cerrar sesión</button>
+    <section id="assistantPanel" class="dashboard" hidden>
+      <div class="account-bar"><span id="accountEmail"></span><button type="button" id="logoutButton">Cerrar sesión</button></div>
+      <div class="hero">
+        <div class="core" aria-label="Núcleo energético de JARVIS"><div class="core-orb"></div></div>
+        <div class="core-state" id="coreState">● Sistema en reposo</div>
+        <h2 class="welcome">A su disposición, jefe.</h2>
+        <p class="subtitle">¿En qué puedo ayudarle hoy?</p>
       </div>
 
-      <section class="panel">
-        <h3>◈ Memoria permanente</h3>
-        <p class="memory-note">Acá podés revisar lo que JARVIS conserva entre conversaciones. Los recuerdos nuevos quedan pendientes hasta que los apruebes.</p>
-        <button type="button" id="toggleMemoryButton">Abrir memoria</button>
-        <div id="memoryPanel" hidden>
-          <form id="memoryForm" class="memory-form">
-            <h3>Proponer un recuerdo</h3>
-            <label for="memoryCategory">Categoría</label>
-            <select id="memoryCategory" required>
-              <option value="Preferencias">Preferencias</option>
-              <option value="Proyectos">Proyectos</option>
-              <option value="Historia compartida">Historia compartida</option>
-              <option value="Rutinas">Rutinas</option>
-              <option value="Otros">Otros</option>
-            </select>
-            <label for="memoryTitle">Título</label>
-            <input id="memoryTitle" maxlength="120" required placeholder="Ej.: Proyecto JARVIS">
-            <label for="memoryContent">¿Qué debería recordar?</label>
-            <textarea id="memoryContent" maxlength="3000" required placeholder="Escribí el recuerdo que querés proponer..."></textarea>
-            <button type="submit" id="saveMemoryButton">Enviar para aprobación</button>
-          </form>
-          <p id="memoryMessage" class="memory-note" role="status"></p>
-          <h3>Mis recuerdos</h3>
-          <div id="memoryList" aria-live="polite">Cargando recuerdos...</div>
-          <button type="button" id="refreshMemoryButton">Actualizar lista</button>
-        </div>
+      <section class="reply-card" aria-live="polite">
+        <div class="reply-icon">J</div><div><div class="reply-label">ÚLTIMA RESPUESTA · JARVIS</div><div class="reply-text" id="lastReply">Sistema operativo. Estoy listo para recibir instrucciones.</div></div>
       </section>
 
       <p id="modelStatus">◈ Modelo: esperando conexión...</p>
 
-      <div class="core"><span>J</span></div>
-
-      <h2>¿En qué puedo ayudarte, jefe?</h2>
-      <p class="subtitle">Tu asistente personal</p>
-
-      <section class="panel">
-        <h3>◈ Mi perfil</h3>
-        <p>
-          Elegante y amigable<br>
-          Voz masculina deseada<br>
-          Autonomía configurable<br>
-          Memoria bajo tu control
-        </p>
-      </section>
-
-      <section class="panel">
-        <h3>◈ Mis capacidades</h3>
-        <p>
-          • Conversación inteligente<br>
-          • Continuidad de conversación<br>
-          • Conversación por voz<br>
-          • Reloj interno de Argentina<br>
-          • Acceso protegido por usuario
-        </p>
-      </section>
-
-      <div class="buttons">
+      <div class="controls">
         <button type="button" onclick="speak()">🎙 Hablar</button>
         <button type="button" onclick="startVoice()">🎧 Activar voz</button>
+        <button type="button" class="primary" onclick="document.getElementById('chatDrawer').open = true; document.getElementById('userInput').focus();">◈ Conversación</button>
       </div>
 
       <div id="memoryNotice" class="memory-notice" role="status" aria-live="polite" hidden>
@@ -304,17 +88,36 @@
         <button type="button" id="openMemoryFromNotice">Revisar propuesta en Memoria</button>
       </div>
 
-      <section class="panel chat">
-        <h3>◈ Conversación</h3>
-        <div id="messages"></div>
-        <div class="input-area">
-          <input id="userInput" type="text" placeholder="Escribí un mensaje..." autocomplete="off">
-          <button type="button" id="sendButton" onclick="sendMessage()">Enviar</button>
-        </div>
-      </section>
-    </section>
+      <nav class="nav" aria-label="Secciones de JARVIS">
+        <button type="button" id="toggleMemoryButton">◉ Memoria</button>
+        <button type="button" onclick="document.getElementById('modelStatus').scrollIntoView({behavior:'smooth',block:'center'})">⚙ Estado</button>
+        <button type="button" onclick="document.getElementById('profilePanel').hidden = !document.getElementById('profilePanel').hidden">ⓘ Acerca de</button>
+      </nav>
 
-    <footer>JARVIS · Versión 0.2 · Prototipo en desarrollo</footer>
+      <section class="panel" id="memoryPanel" hidden>
+        <h3>◈ Memoria permanente</h3>
+        <p class="memory-note">Acá podés revisar lo que JARVIS conserva entre conversaciones. Los recuerdos nuevos quedan pendientes hasta que los apruebes.</p>
+        <form id="memoryForm" class="memory-form">
+          <h3>Proponer un recuerdo</h3>
+          <label for="memoryCategory">Categoría</label>
+          <select id="memoryCategory" required><option value="Preferencias">Preferencias</option><option value="Proyectos">Proyectos</option><option value="Historia compartida">Historia compartida</option><option value="Rutinas">Rutinas</option><option value="Otros">Otros</option></select>
+          <label for="memoryTitle">Título</label><input id="memoryTitle" maxlength="120" required placeholder="Ej.: Proyecto JARVIS">
+          <label for="memoryContent">¿Qué debería recordar?</label><textarea id="memoryContent" maxlength="3000" required placeholder="Escribí el recuerdo que querés proponer..."></textarea>
+          <button type="submit" id="saveMemoryButton">Enviar para aprobación</button>
+        </form>
+        <p id="memoryMessage" class="memory-note" role="status"></p><h3>Mis recuerdos</h3>
+        <div id="memoryList" aria-live="polite">Cargando recuerdos...</div>
+        <button type="button" id="refreshMemoryButton">Actualizar lista</button>
+      </section>
+
+      <section class="panel" id="profilePanel" hidden><h3>◈ Perfil de JARVIS</h3><p>Elegante y amigable · Voz masculina deseada · Autonomía configurable · Memoria bajo tu control.</p><p>Funciones actuales: conversación inteligente, continuidad de conversación, conversación por voz, reloj interno de Argentina y acceso protegido por usuario.</p></section>
+
+      <details class="chat-drawer" id="chatDrawer">
+        <summary>◈ Conversación con JARVIS <span style="font-size:11px;color:#a995bb">Abrir historial y escribir</span></summary>
+        <div class="chat-content"><div id="messages" aria-live="polite"></div><div class="input-area"><input id="userInput" type="text" placeholder="Escribí un mensaje..." autocomplete="off"><button type="button" id="sendButton" onclick="sendMessage()">Enviar</button></div></div>
+      </details>
+    </section>
+    <footer class="footer">JARVIS · Versión 0.3 · Prototipo en desarrollo</footer>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -398,6 +201,9 @@
       }
 
       renderConversation();
+      const preview = document.getElementById("lastReply");
+      const latestReply = [...conversation].reverse().find(line => line.startsWith("JARVIS:"));
+      if (preview && latestReply) preview.textContent = latestReply.replace(/^JARVIS:\s*/, "");
     }
 
     function renderConversation() {
@@ -429,6 +235,8 @@
     }
 
     function addMessage(text) {
+      const preview = document.getElementById("lastReply");
+      if (preview && text.startsWith("JARVIS:")) preview.textContent = text.replace(/^JARVIS:\s*/, "");
       conversation.push(text);
       if (conversation.length > 200) conversation = conversation.slice(-200);
       saveConversation();
@@ -723,6 +531,8 @@
 
       sending = true;
       sendButton.disabled = true;
+      const coreState = document.getElementById("coreState");
+      if (coreState) coreState.textContent = "◌ Procesando solicitud";
       input.value = "";
       addMessage("Jefe: " + text);
 
@@ -775,10 +585,12 @@
 
         processing.remove();
         addMessage("JARVIS: " + data.reply);
+        if (coreState) coreState.textContent = "● Sistema en reposo";
       } catch (error) {
         console.error("Error de JARVIS:", error);
         processing.remove();
         addMessage("JARVIS: " + (error.message || "No pude conectarme. Inténtelo nuevamente."));
+        if (coreState) coreState.textContent = "● Sistema en reposo";
       } finally {
         sending = false;
         sendButton.disabled = false;
@@ -835,3 +647,4 @@
     initialize();
   </script>
 </body>
+</html>
