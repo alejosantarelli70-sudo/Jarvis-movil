@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,9 +8,7 @@
   <title>JARVIS - Asistente personal</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -34,7 +31,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 45px;
+      margin-bottom: 35px;
     }
 
     header h1 {
@@ -44,10 +41,7 @@
       text-shadow: 0 0 15px #a33cff;
     }
 
-    .status {
-      color: #8cffb1;
-      font-size: 12px;
-    }
+    .status { color: #8cffb1; font-size: 12px; }
 
     .core {
       width: 205px;
@@ -73,10 +67,7 @@
       to { box-shadow: 0 0 40px #c16aff, inset 0 0 30px #a33cff; }
     }
 
-    h2 {
-      font-weight: normal;
-      font-size: 21px;
-    }
+    h2 { font-weight: normal; font-size: 21px; }
 
     .subtitle {
       color: #bba8ca;
@@ -93,10 +84,7 @@
       text-align: left;
     }
 
-    .panel h3 {
-      color: #d8a5ff;
-      margin-top: 0;
-    }
+    .panel h3 { color: #d8a5ff; margin-top: 0; }
 
     .panel p {
       color: #d3c8df;
@@ -104,11 +92,7 @@
       line-height: 1.6;
     }
 
-    .buttons {
-      display: flex;
-      gap: 12px;
-      margin: 22px 0;
-    }
+    .buttons { display: flex; gap: 12px; margin: 22px 0; }
 
     button {
       flex: 1;
@@ -121,12 +105,31 @@
       cursor: pointer;
     }
 
-    button:active {
-      background: #632b91;
+    button:active { background: #632b91; }
+    button:disabled { opacity: 0.55; cursor: wait; }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      background: #130d1c;
+      border: 1px solid #75449a;
+      border-radius: 10px;
+      padding: 13px;
+      color: white;
+      outline: none;
+      margin: 6px 0;
     }
 
-    .chat {
-      margin-top: 20px;
+    .auth-panel { max-width: 430px; margin: 35px auto; }
+    .auth-panel label { color: #d3c8df; font-size: 13px; display: block; margin-top: 10px; }
+    .auth-panel button { width: 100%; margin-top: 12px; }
+    .auth-message { min-height: 22px; color: #ffb4c0; font-size: 13px; line-height: 1.4; }
+
+    #modelStatus {
+      color: #bba8ca;
+      font-size: 12px;
+      margin-top: -20px;
+      margin-bottom: 25px;
     }
 
     #messages {
@@ -139,323 +142,424 @@
       text-align: left;
     }
 
-    .input-area {
+    .input-area { display: flex; gap: 8px; margin-top: 12px; }
+    .input-area input { flex: 1; margin: 0; }
+    .input-area button { flex: 0 0 75px; }
+
+    .account-bar {
       display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    input {
-      flex: 1;
-      min-width: 0;
-      background: #130d1c;
-      border: 1px solid #75449a;
-      border-radius: 10px;
-      padding: 13px;
-      color: white;
-      outline: none;
-    }
-
-    .input-area button {
-      flex: 0 0 65px;
-    }
-
-    footer {
-      color: #9b83ae;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #bba8ca;
       font-size: 12px;
-      margin-top: 30px;
+      margin: 12px 0 20px;
+      overflow-wrap: anywhere;
     }
+
+    .account-bar button {
+      flex: 0 0 auto;
+      padding: 9px 12px;
+      font-size: 12px;
+    }
+
+    footer { color: #9b83ae; font-size: 12px; margin-top: 30px; }
+    [hidden] { display: none !important; }
   </style>
 </head>
 
 <body>
   <main class="app">
-
     <header>
       <h1>JARVIS</h1>
-      <span class="status">● En línea</span>
+      <span class="status" id="connectionStatus">● Verificando sesión</span>
     </header>
-    <p id="modelStatus" style="
-  color: #bba8ca;
-  font-size: 12px;
-  margin-top: -30px;
-  margin-bottom: 25px;
-">
-  ◈ Modelo: esperando conexión...
-    </p>
 
-    <div class="core">
-      <span>J</span>
-    </div>
-
-    <h2>¿En qué puedo ayudarte, jefe?</h2>
-    <p class="subtitle">Tu asistente personal</p>
-
-    <section class="panel">
-      <h3>◈ Mi perfil</h3>
-      <p>
-        Elegante y amigable<br>
-        Voz masculina deseada<br>
-        Autonomía configurable<br>
-        Memoria bajo tu control
-      </p>
+    <section class="panel auth-panel" id="loginPanel" hidden>
+      <h3>◈ Acceso seguro</h3>
+      <p>Iniciá sesión para acceder a tu asistente personal.</p>
+      <form id="loginForm">
+        <label for="email">Correo electrónico</label>
+        <input id="email" type="email" autocomplete="username" required placeholder="Tu correo">
+        <label for="password">Contraseña</label>
+        <input id="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña">
+        <button type="submit" id="loginButton">Iniciar sesión</button>
+      </form>
+      <p class="auth-message" id="authMessage" role="status"></p>
+      <p style="font-size:12px;color:#9b83ae;">El acceso está limitado a usuarios autorizados.</p>
     </section>
 
-    <section class="panel">
-      <h3>◈ Mis capacidades</h3>
-      <p>
-        • Gestión de tareas<br>
-        • Recordatorios<br>
-        • Información y búsquedas<br>
-        • Conversación por voz<br>
-        • Iniciativa propia
-      </p>
-    </section>
-
-    <div class="buttons">
-      <button onclick="speak()">🎙 Hablar</button>
-      <button onclick="startVoice()">🎧 Activar voz</button>
-    </div>
-
-    <section class="panel chat">
-      <h3>◈ Conversación</h3>
-      <div id="messages">
-        JARVIS: Sistema de demostración iniciado. Estoy listo para recibir instrucciones.
+    <section id="assistantPanel" hidden>
+      <div class="account-bar">
+        <span id="accountEmail"></span>
+        <button type="button" id="logoutButton">Cerrar sesión</button>
       </div>
 
-      <div class="input-area">
-        <input id="userInput" type="text"
-          placeholder="Escribí un mensaje..."
-          onkeydown="if(event.key==='Enter') sendMessage()">
-        <button onclick="sendMessage()">Enviar</button>
+      <p id="modelStatus">◈ Modelo: esperando conexión...</p>
+
+      <div class="core"><span>J</span></div>
+
+      <h2>¿En qué puedo ayudarte, jefe?</h2>
+      <p class="subtitle">Tu asistente personal</p>
+
+      <section class="panel">
+        <h3>◈ Mi perfil</h3>
+        <p>
+          Elegante y amigable<br>
+          Voz masculina deseada<br>
+          Autonomía configurable<br>
+          Memoria bajo tu control
+        </p>
+      </section>
+
+      <section class="panel">
+        <h3>◈ Mis capacidades</h3>
+        <p>
+          • Conversación inteligente<br>
+          • Continuidad de conversación<br>
+          • Conversación por voz<br>
+          • Reloj interno de Argentina<br>
+          • Acceso protegido por usuario
+        </p>
+      </section>
+
+      <div class="buttons">
+        <button type="button" onclick="speak()">🎙 Hablar</button>
+        <button type="button" onclick="startVoice()">🎧 Activar voz</button>
       </div>
+
+      <section class="panel chat">
+        <h3>◈ Conversación</h3>
+        <div id="messages"></div>
+        <div class="input-area">
+          <input id="userInput" type="text" placeholder="Escribí un mensaje..." autocomplete="off">
+          <button type="button" id="sendButton" onclick="sendMessage()">Enviar</button>
+        </div>
+      </section>
     </section>
 
-    <footer>
-      JARVIS · Versión 0.1 · Prototipo en desarrollo
-    </footer>
-
+    <footer>JARVIS · Versión 0.2 · Prototipo en desarrollo</footer>
   </main>
-<script>
-  const STORAGE_KEY = "jarvis_conversation";
-const INTERACTION_KEY = "jarvis_interaction_id";
 
-const messages = document.getElementById("messages");
-const input = document.getElementById("userInput");
-const modelStatus = document.getElementById("modelStatus");
-  
-let conversation = [];
-let previousInteractionId = null;
-let sending = false;
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Estas dos credenciales son públicas por diseño. La clave secreta nunca va aquí.
+    const SUPABASE_URL = "https://kaihowddqakcupvghmfx.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ARHruWzLM683VoD8q_6cOQ_f5q1EtVW";
+    const BACKEND_URL = "https://jarvis-brain-o9gn.onrender.com";
 
-// Recuperar conversación guardada
-try {
-  const savedConversation = localStorage.getItem(STORAGE_KEY);
-
-  if (savedConversation) {
-    const parsed = JSON.parse(savedConversation);
-
-    if (Array.isArray(parsed)) {
-      conversation = parsed.filter(
-        item => typeof item === "string"
-      );
-    }
-  }
-
-  previousInteractionId =
-    localStorage.getItem(INTERACTION_KEY);
-} catch (error) {
-  console.error("Error al recuperar memoria:", error);
-}
-
-// Mostrar conversación
-function renderConversation() {
-  messages.textContent = "";
-
-  if (conversation.length === 0) {
-    messages.textContent =
-      "JARVIS: Sistema de demostración iniciado. Estoy listo para recibir instrucciones.";
-    return;
-  }
-
-  conversation.forEach(text => {
-    const line = document.createElement("p");
-    line.textContent = text;
-    messages.appendChild(line);
-  });
-
-  messages.scrollTop = messages.scrollHeight;
-}
-
-// Guardar conversación
-function saveConversation() {
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(conversation)
-    );
-  } catch (error) {
-    console.error("No pude guardar la conversación:", error);
-  }
-}
-
-// Agregar mensaje
-function addMessage(text) {
-  conversation.push(text);
-
-  // Conservar los últimos 200 mensajes
-  if (conversation.length > 200) {
-    conversation = conversation.slice(-200);
-  }
-
-  saveConversation();
-  renderConversation();
-}
-
-// Registrar el Service Worker una sola vez
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js")
-      .catch(error =>
-        console.error("Error al registrar JARVIS:", error)
-      );
-  });
-}
-
-//enviar mensajes a Jarvis
-async function sendMessage() {
-  if (sending) return;
-
-  const text = input.value.trim();
-
-  if (!text) return;
-
-  sending = true;
-  input.value = "";
-
-  addMessage("Jefe: " + text);
-
-  const processing = document.createElement("p");
-  processing.textContent = "JARVIS: Procesando...";
-  messages.appendChild(processing);
-  messages.scrollTop = messages.scrollHeight;
-
-  try {
-    const response = await fetch(
-      "https://jarvis-brain-o9gn.onrender.com/chat",
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY,
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: text,
-          previousInteractionId: previousInteractionId
-        })
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
       }
     );
 
-    const data = await response.json();
-if (data.model) {
-  modelStatus.textContent = "◈ Modelo: " + data.model;
-} else {
-  modelStatus.textContent = "◈ Respuesta mediante sistema interno";
-}
-    
-    if (!response.ok) {
-      throw new Error(
-        data.error || "Error de conexión"
-      );
+    const loginPanel = document.getElementById("loginPanel");
+    const assistantPanel = document.getElementById("assistantPanel");
+    const loginForm = document.getElementById("loginForm");
+    const loginButton = document.getElementById("loginButton");
+    const authMessage = document.getElementById("authMessage");
+    const connectionStatus = document.getElementById("connectionStatus");
+    const accountEmail = document.getElementById("accountEmail");
+    const logoutButton = document.getElementById("logoutButton");
+    const messages = document.getElementById("messages");
+    const input = document.getElementById("userInput");
+    const modelStatus = document.getElementById("modelStatus");
+    const sendButton = document.getElementById("sendButton");
+
+    let currentUser = null;
+    let conversation = [];
+    let previousInteractionId = null;
+    let sending = false;
+    let STORAGE_KEY = "";
+    let INTERACTION_KEY = "";
+
+    function setUserStorage(userId) {
+      STORAGE_KEY = "jarvis_conversation_" + userId;
+      INTERACTION_KEY = "jarvis_interaction_id_" + userId;
+
+      // Migrar el historial antiguo una sola vez, para no perderlo al iniciar sesión.
+      try {
+        if (!localStorage.getItem(STORAGE_KEY)) {
+          const oldConversation = localStorage.getItem("jarvis_conversation");
+          if (oldConversation) localStorage.setItem(STORAGE_KEY, oldConversation);
+        }
+        if (!localStorage.getItem(INTERACTION_KEY)) {
+          const oldInteraction = localStorage.getItem("jarvis_interaction_id");
+          if (oldInteraction) localStorage.setItem(INTERACTION_KEY, oldInteraction);
+        }
+
+        const saved = localStorage.getItem(STORAGE_KEY);
+        const parsed = saved ? JSON.parse(saved) : [];
+        conversation = Array.isArray(parsed)
+          ? parsed.filter(item => typeof item === "string").slice(-200)
+          : [];
+
+        previousInteractionId = localStorage.getItem(INTERACTION_KEY);
+      } catch (error) {
+        console.error("No pude recuperar el historial local:", error);
+        conversation = [];
+        previousInteractionId = null;
+      }
+
+      renderConversation();
     }
 
-    if (data.interactionId) {
-      previousInteractionId = data.interactionId;
+    function renderConversation() {
+      messages.textContent = "";
+
+      if (conversation.length === 0) {
+        messages.textContent =
+          "JARVIS: Sistema operativo. Estoy listo para recibir instrucciones.";
+        return;
+      }
+
+      conversation.forEach(text => {
+        const line = document.createElement("p");
+        line.textContent = text;
+        messages.appendChild(line);
+      });
+
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function saveConversation() {
+      try {
+        if (STORAGE_KEY) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(conversation));
+        }
+      } catch (error) {
+        console.error("No pude guardar la conversación:", error);
+      }
+    }
+
+    function addMessage(text) {
+      conversation.push(text);
+      if (conversation.length > 200) conversation = conversation.slice(-200);
+      saveConversation();
+      renderConversation();
+    }
+
+    function showLogin(message = "") {
+      currentUser = null;
+      assistantPanel.hidden = true;
+      loginPanel.hidden = false;
+      connectionStatus.textContent = "● Sesión no iniciada";
+      authMessage.textContent = message;
+    }
+
+    async function showAssistant(session) {
+      currentUser = session.user;
+      setUserStorage(currentUser.id);
+      accountEmail.textContent = currentUser.email || "Usuario autenticado";
+      loginPanel.hidden = true;
+      assistantPanel.hidden = false;
+      connectionStatus.textContent = "● Sesión protegida";
+      authMessage.textContent = "";
+    }
+
+    loginForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      authMessage.textContent = "";
+      loginButton.disabled = true;
+      loginButton.textContent = "Verificando...";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
       try {
-        localStorage.setItem(
-          INTERACTION_KEY,
-          previousInteractionId
-        );
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+        await showAssistant(data.session);
+        loginForm.reset();
       } catch (error) {
-        console.error(
-          "No pude guardar el identificador:",
-          error
-        );
+        console.error("Error de inicio de sesión:", error);
+        authMessage.textContent = "No pude iniciar sesión. Revisá el correo y la contraseña.";
+      } finally {
+        loginButton.disabled = false;
+        loginButton.textContent = "Iniciar sesión";
+      }
+    });
+
+    logoutButton.addEventListener("click", async () => {
+      logoutButton.disabled = true;
+      try {
+        await supabaseClient.auth.signOut();
+        showLogin("Sesión cerrada correctamente.");
+      } catch (error) {
+        console.error("Error al cerrar sesión:", error);
+        connectionStatus.textContent = "● Error al cerrar sesión";
+      } finally {
+        logoutButton.disabled = false;
+      }
+    });
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        // Evitar operaciones complejas dentro del callback de Supabase Auth.
+        setTimeout(() => showAssistant(session), 0);
+      } else if (event === "SIGNED_OUT") {
+        showLogin();
+      }
+    });
+
+    async function initialize() {
+      if (!window.supabase) {
+        showLogin("No se pudo cargar el servicio de autenticación. Recargá la página.");
+        connectionStatus.textContent = "● Error de autenticación";
+        return;
+      }
+
+      try {
+        const { data, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+
+        if (data.session) {
+          await showAssistant(data.session);
+        } else {
+          showLogin();
+        }
+      } catch (error) {
+        console.error("No pude recuperar la sesión:", error);
+        showLogin("No pude verificar la sesión. Volvé a iniciar sesión.");
       }
     }
 
-    processing.remove();
+    // Registrar el Service Worker una sola vez.
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+          .catch(error => console.error("Error al registrar JARVIS:", error));
+      });
+    }
 
-    addMessage("JARVIS: " + data.reply);
+    async function sendMessage() {
+      if (sending || !currentUser) return;
 
-  } catch (error) {
-    console.error("Error de JARVIS:", error);
+      const text = input.value.trim();
+      if (!text) return;
 
-    processing.remove();
+      sending = true;
+      sendButton.disabled = true;
+      input.value = "";
+      addMessage("Jefe: " + text);
 
-    addMessage(
-      "JARVIS: No pude conectarme. Inténtelo nuevamente."
-    );
+      const processing = document.createElement("p");
+      processing.textContent = "JARVIS: Procesando...";
+      messages.appendChild(processing);
+      messages.scrollTop = messages.scrollHeight;
 
-  } finally {
-    sending = false;
-  }
-}
+      try {
+        const { data: sessionData, error: sessionError } =
+          await supabaseClient.auth.getSession();
 
+        if (sessionError || !sessionData.session) {
+          throw new Error("Tu sesión venció. Iniciá sesión nuevamente.");
+        }
 
-// Mostrar historial al abrir la página
-renderConversation();
+        const response = await fetch(BACKEND_URL + "/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + sessionData.session.access_token
+          },
+          body: JSON.stringify({
+            message: text,
+            previousInteractionId: previousInteractionId
+          })
+        });
 
-// Respuesta por voz
-function speak() {
-  if (!("speechSynthesis" in window)) {
-    addMessage(
-      "JARVIS: Este navegador no admite síntesis de voz."
-    );
-    return;
-  }
+        const data = await response.json();
 
-  const speech = new SpeechSynthesisUtterance(
-    "A su disposición, jefe."
-  );
+        if (!response.ok) {
+          if (response.status === 401) {
+            await supabaseClient.auth.signOut();
+            showLogin(data.error || "La sesión venció. Iniciá sesión nuevamente.");
+          }
+          throw new Error(data.error || "Error de conexión");
+        }
 
-  speech.lang = "es-AR";
-  speech.rate = 0.9;
+        modelStatus.textContent = "◈ Modelo: " + (data.model || "no informado");
 
-  window.speechSynthesis.speak(speech);
-}
+        if (data.interactionId) {
+          previousInteractionId = data.interactionId;
+          try {
+            localStorage.setItem(INTERACTION_KEY, previousInteractionId);
+          } catch (error) {
+            console.error("No pude guardar el identificador:", error);
+          }
+        }
 
-// Reconocimiento de voz
-function startVoice() {
-  const Recognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
+        processing.remove();
+        addMessage("JARVIS: " + data.reply);
+      } catch (error) {
+        console.error("Error de JARVIS:", error);
+        processing.remove();
+        addMessage("JARVIS: " + (error.message || "No pude conectarme. Inténtelo nuevamente."));
+      } finally {
+        sending = false;
+        sendButton.disabled = false;
+      }
+    }
 
-  if (!Recognition) {
-    addMessage(
-      "JARVIS: El reconocimiento de voz no está disponible en este navegador."
-    );
-    return;
-  }
+    input.addEventListener("keydown", event => {
+      if (event.key === "Enter") sendMessage();
+    });
 
-  const recognition = new Recognition();
+    function speak() {
+      if (!("speechSynthesis" in window)) {
+        addMessage("JARVIS: Este navegador no admite síntesis de voz.");
+        return;
+      }
 
-  recognition.lang = "es-AR";
+      const lastJarvisMessage = [...conversation].reverse()
+        .find(line => line.startsWith("JARVIS:"));
 
-  recognition.onresult = function(event) {
-    input.value = event.results[0][0].transcript;
-    sendMessage();
-  };
+      const speech = new SpeechSynthesisUtterance(
+        lastJarvisMessage
+          ? lastJarvisMessage.replace(/^JARVIS:\s*/, "")
+          : "A su disposición, jefe."
+      );
 
-  recognition.onerror = function() {
-    addMessage(
-      "JARVIS: No pude reconocer el audio. Revisá los permisos del micrófono."
-    );
-  };
+      speech.lang = "es-AR";
+      speech.rate = 0.9;
+      window.speechSynthesis.speak(speech);
+    }
 
-  recognition.start();
-}
-</script>
+    function startVoice() {
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!Recognition) {
+        addMessage("JARVIS: El reconocimiento de voz no está disponible en este navegador.");
+        return;
+      }
+
+      const recognition = new Recognition();
+      recognition.lang = "es-AR";
+
+      recognition.onresult = event => {
+        input.value = event.results[0][0].transcript;
+        sendMessage();
+      };
+
+      recognition.onerror = () => {
+        addMessage("JARVIS: No pude reconocer el audio. Revisá los permisos del micrófono.");
+      };
+
+      recognition.start();
+    }
+
+    initialize();
+  </script>
 </body>
-  </html>
-        
+</html>
