@@ -163,6 +163,31 @@
       font-size: 12px;
     }
 
+    .memory-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .memory-actions button { flex: 1 1 100px; padding: 10px; font-size: 12px; }
+    .memory-item {
+      background: rgba(20, 10, 30, 0.72);
+      border: 1px solid rgba(190,110,255,0.25);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 10px 0;
+      overflow-wrap: anywhere;
+    }
+    .memory-item h4 { color: #e6c6ff; margin: 0 0 6px; }
+    .memory-meta { color: #bba8ca; font-size: 11px; margin-bottom: 7px; }
+    .memory-content { color: #eee5f5; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+    .memory-status { color: #ffd58a; font-size: 11px; margin-top: 8px; }
+    .memory-status.approved { color: #8cffb1; }
+    .memory-form label { color: #d3c8df; display: block; font-size: 12px; margin-top: 9px; }
+    .memory-form select, .memory-form textarea {
+      width: 100%; background: #130d1c; color: white;
+      border: 1px solid #75449a; border-radius: 10px;
+      padding: 11px; margin-top: 5px; font: inherit;
+    }
+    .memory-form textarea { min-height: 85px; resize: vertical; }
+    .memory-note { color: #bba8ca; font-size: 12px; line-height: 1.5; }
+    #memoryList { max-height: 420px; overflow-y: auto; }
+
     footer { color: #9b83ae; font-size: 12px; margin-top: 30px; }
     [hidden] { display: none !important; }
   </style>
@@ -194,6 +219,34 @@
         <span id="accountEmail"></span>
         <button type="button" id="logoutButton">Cerrar sesión</button>
       </div>
+
+      <section class="panel">
+        <h3>◈ Memoria permanente</h3>
+        <p class="memory-note">Acá podés revisar lo que JARVIS conserva entre conversaciones. Los recuerdos nuevos quedan pendientes hasta que los apruebes.</p>
+        <button type="button" id="toggleMemoryButton">Abrir memoria</button>
+        <div id="memoryPanel" hidden>
+          <form id="memoryForm" class="memory-form">
+            <h3>Proponer un recuerdo</h3>
+            <label for="memoryCategory">Categoría</label>
+            <select id="memoryCategory" required>
+              <option value="Preferencias">Preferencias</option>
+              <option value="Proyectos">Proyectos</option>
+              <option value="Historia compartida">Historia compartida</option>
+              <option value="Rutinas">Rutinas</option>
+              <option value="Otros">Otros</option>
+            </select>
+            <label for="memoryTitle">Título</label>
+            <input id="memoryTitle" maxlength="120" required placeholder="Ej.: Proyecto JARVIS">
+            <label for="memoryContent">¿Qué debería recordar?</label>
+            <textarea id="memoryContent" maxlength="3000" required placeholder="Escribí el recuerdo que querés proponer..."></textarea>
+            <button type="submit" id="saveMemoryButton">Enviar para aprobación</button>
+          </form>
+          <p id="memoryMessage" class="memory-note" role="status"></p>
+          <h3>Mis recuerdos</h3>
+          <div id="memoryList" aria-live="polite">Cargando recuerdos...</div>
+          <button type="button" id="refreshMemoryButton">Actualizar lista</button>
+        </div>
+      </section>
 
       <p id="modelStatus">◈ Modelo: esperando conexión...</p>
 
@@ -272,6 +325,16 @@
     const input = document.getElementById("userInput");
     const modelStatus = document.getElementById("modelStatus");
     const sendButton = document.getElementById("sendButton");
+    const toggleMemoryButton = document.getElementById("toggleMemoryButton");
+    const memoryPanel = document.getElementById("memoryPanel");
+    const memoryForm = document.getElementById("memoryForm");
+    const memoryCategory = document.getElementById("memoryCategory");
+    const memoryTitle = document.getElementById("memoryTitle");
+    const memoryContent = document.getElementById("memoryContent");
+    const saveMemoryButton = document.getElementById("saveMemoryButton");
+    const memoryMessage = document.getElementById("memoryMessage");
+    const memoryList = document.getElementById("memoryList");
+    const refreshMemoryButton = document.getElementById("refreshMemoryButton");
 
     let currentUser = null;
     let conversation = [];
@@ -363,6 +426,172 @@
       connectionStatus.textContent = "● Sesión protegida";
       authMessage.textContent = "";
     }
+
+    async function memoryRequest(path, options = {}) {
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
+
+      if (sessionError || !sessionData.session) {
+        throw new Error("Tu sesión venció. Iniciá sesión nuevamente.");
+      }
+
+      const response = await fetch(BACKEND_URL + path, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + sessionData.session.access_token,
+          ...(options.headers || {})
+        }
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "No pude completar la operación de memoria.");
+      return data;
+    }
+
+    function setMemoryMessage(message, isError = false) {
+      memoryMessage.textContent = message;
+      memoryMessage.style.color = isError ? "#ffb4c0" : "#bba8ca";
+    }
+
+    async function loadMemories() {
+      if (!currentUser) return;
+      memoryList.textContent = "Consultando la memoria de JARVIS...";
+      try {
+        const data = await memoryRequest("/memories");
+        renderMemories(Array.isArray(data.memories) ? data.memories : []);
+      } catch (error) {
+        memoryList.textContent = error.message;
+        setMemoryMessage("No pude consultar los recuerdos.", true);
+      }
+    }
+
+    function renderMemories(items) {
+      memoryList.textContent = "";
+      if (!items.length) {
+        memoryList.textContent = "Todavía no hay recuerdos guardados ni propuestas pendientes.";
+        return;
+      }
+
+      items.forEach(memory => {
+        const card = document.createElement("article");
+        card.className = "memory-item";
+
+        const heading = document.createElement("h4");
+        heading.textContent = memory.title;
+        const meta = document.createElement("div");
+        meta.className = "memory-meta";
+        meta.textContent = memory.category;
+        const content = document.createElement("div");
+        content.className = "memory-content";
+        content.textContent = memory.content;
+        const status = document.createElement("div");
+        status.className = "memory-status" + (memory.approved ? " approved" : "");
+        status.textContent = memory.approved ? "✓ Aprobado: JARVIS puede utilizar este recuerdo." : "◷ Pendiente: JARVIS todavía no lo utiliza como recuerdo permanente.";
+
+        card.append(heading, meta, content, status);
+
+        const actions = document.createElement("div");
+        actions.className = "memory-actions";
+
+        if (!memory.approved) {
+          const approveButton = document.createElement("button");
+          approveButton.type = "button";
+          approveButton.textContent = "Aprobar";
+          approveButton.addEventListener("click", () => updateMemory(memory.id, { approved: true }, "Recuerdo aprobado."));
+          actions.appendChild(approveButton);
+        }
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.textContent = "Editar";
+        editButton.addEventListener("click", () => editMemory(memory));
+        actions.appendChild(editButton);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Eliminar";
+        deleteButton.addEventListener("click", () => deleteMemory(memory.id));
+        actions.appendChild(deleteButton);
+
+        card.appendChild(actions);
+        memoryList.appendChild(card);
+      });
+    }
+
+    async function updateMemory(id, changes, successMessage) {
+      try {
+        await memoryRequest("/memories/" + encodeURIComponent(id), {
+          method: "PATCH",
+          body: JSON.stringify(changes)
+        });
+        setMemoryMessage(successMessage);
+        await loadMemories();
+      } catch (error) {
+        setMemoryMessage(error.message, true);
+      }
+    }
+
+    async function editMemory(memory) {
+      const title = window.prompt("Editar el título del recuerdo:", memory.title);
+      if (title === null) return;
+      const content = window.prompt("Editar el contenido del recuerdo:", memory.content);
+      if (content === null) return;
+      const category = window.prompt("Editar la categoría:", memory.category);
+      if (category === null) return;
+
+      await updateMemory(memory.id, {
+        title: title.trim(),
+        content: content.trim(),
+        category: category.trim()
+      }, "Recuerdo actualizado.");
+    }
+
+    async function deleteMemory(id) {
+      if (!window.confirm("¿Seguro que querés eliminar este recuerdo? Esta acción no se puede deshacer.")) return;
+      try {
+        await memoryRequest("/memories/" + encodeURIComponent(id), { method: "DELETE" });
+        setMemoryMessage("Recuerdo eliminado.");
+        await loadMemories();
+      } catch (error) {
+        setMemoryMessage(error.message, true);
+      }
+    }
+
+    toggleMemoryButton.addEventListener("click", async () => {
+      memoryPanel.hidden = !memoryPanel.hidden;
+      toggleMemoryButton.textContent = memoryPanel.hidden ? "Abrir memoria" : "Cerrar memoria";
+      if (!memoryPanel.hidden) await loadMemories();
+    });
+
+    refreshMemoryButton.addEventListener("click", loadMemories);
+
+    memoryForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!currentUser) return;
+      saveMemoryButton.disabled = true;
+      saveMemoryButton.textContent = "Enviando...";
+      setMemoryMessage("");
+
+      try {
+        await memoryRequest("/memories", {
+          method: "POST",
+          body: JSON.stringify({
+            category: memoryCategory.value,
+            title: memoryTitle.value.trim(),
+            content: memoryContent.value.trim()
+          })
+        });
+        memoryForm.reset();
+        setMemoryMessage("Propuesta creada. Revisala en la lista y aprobala si querés que JARVIS la recuerde.");
+        await loadMemories();
+      } catch (error) {
+        setMemoryMessage(error.message, true);
+      } finally {
+        saveMemoryButton.disabled = false;
+        saveMemoryButton.textContent = "Enviar para aprobación";
+      }
+    });
 
     loginForm.addEventListener("submit", async event => {
       event.preventDefault();
