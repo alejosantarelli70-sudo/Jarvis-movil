@@ -18,14 +18,18 @@
     #loginPanel{max-width:460px;margin:70px auto}
     .dashboard{padding:24px 0 0}.account-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:0 3px 12px;overflow-wrap:anywhere}.account-bar button{padding:8px 12px;font-size:12px}
     .hero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 12px 10px;min-height:370px;overflow:hidden}.hero:before{content:"";position:absolute;width:440px;height:300px;top:38px;border-radius:50%;background:radial-gradient(ellipse,rgba(99,48,145,.18),transparent 68%);pointer-events:none}
-    .core{position:relative;width:230px;height:230px;margin:8px auto 22px;border-radius:50%;display:grid;place-items:center;isolation:isolate;filter:drop-shadow(0 0 24px rgba(153,91,220,.3));animation:float 5s ease-in-out infinite}
-    .core:before,.core:after{content:"";position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(184,135,240,.45);box-shadow:0 0 24px rgba(139,75,208,.18),inset 0 0 28px rgba(130,70,180,.12)}
-    .core:after{inset:25px;border-color:rgba(203,167,246,.32);animation:spin 24s linear infinite}
-    .core-orb{width:160px;height:160px;border-radius:50%;position:relative;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.95) 0%,rgba(214,178,255,.82) 5%,rgba(153,93,212,.72) 18%,rgba(74,34,110,.78) 48%,rgba(14,8,25,.98) 74%);box-shadow:inset -16px -18px 32px #080510,inset 8px 8px 24px rgba(255,255,255,.24),0 0 22px #7541a5,0 0 65px rgba(133,69,190,.35);overflow:hidden}
-    .core-orb:before{content:"";position:absolute;inset:15% -20%;border:2px solid rgba(220,188,255,.7);border-radius:50%;transform:rotate(-28deg);filter:blur(.3px);box-shadow:0 0 15px #b77cff}
-    .core-orb:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 25%,rgba(221,190,255,.2) 48%,transparent 58%);animation:shimmer 4s ease-in-out infinite}
-    .core-state{font-size:10px;letter-spacing:3px;color:#c9afdF;text-transform:uppercase;margin-top:2px}
-    @keyframes float{50%{transform:translateY(-7px)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes shimmer{50%{transform:translateX(18px);opacity:.45}}
+    .core{position:relative;width:260px;height:260px;margin:0 auto 12px;display:grid;place-items:center;isolation:isolate;filter:drop-shadow(0 0 22px rgba(153,91,220,.28));animation:coreFloat 7s ease-in-out infinite}
+    .core:before,.core:after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+    .core:before{inset:12px;border:1px solid rgba(169,120,232,.12);box-shadow:0 0 38px rgba(139,75,208,.13),inset 0 0 34px rgba(130,70,180,.08)}
+    .core:after{inset:0;background:radial-gradient(circle,rgba(139,75,208,.10),transparent 68%);filter:blur(12px);z-index:-1}
+    .core-orb{width:100%;height:100%;display:block;overflow:visible}
+    #coreCanvas{width:100%;height:100%;display:block;overflow:visible}
+    .core-state{font-size:10px;letter-spacing:3px;color:#c9afdF;text-transform:uppercase;margin-top:0}
+    .core.listening{filter:drop-shadow(0 0 30px rgba(169,120,232,.55))}
+    .core.processing{filter:drop-shadow(0 0 34px rgba(183,124,255,.58))}
+    .core.speaking{filter:drop-shadow(0 0 42px rgba(201,153,255,.72))}
+    .core.speaking:before{border-color:rgba(211,174,255,.38);box-shadow:0 0 48px rgba(169,120,232,.3),inset 0 0 38px rgba(169,120,232,.16)}
+    @keyframes coreFloat{50%{transform:translateY(-5px)}}
     .welcome{font-size:clamp(20px,3vw,26px);font-weight:400;margin:0 0 7px}.subtitle{color:var(--muted);font-size:13px;margin:0}
     .reply-card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(16px);box-shadow:0 12px 34px rgba(0,0,0,.18)}.reply-card{max-width:680px;width:100%;margin:18px auto 22px;padding:16px 20px;text-align:left;display:flex;gap:13px;align-items:flex-start}.reply-icon{width:30px;height:30px;flex:0 0 30px;border-radius:50%;display:grid;place-items:center;border:1px solid #8052ac;color:#d9b9ff;box-shadow:0 0 14px #482568}.reply-label{font-size:11px;color:#c99cff;letter-spacing:1.5px;margin-bottom:5px}.reply-text{font-size:14px;line-height:1.55;color:#eee3f7;overflow-wrap:anywhere}
     .controls{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:12px 0 26px}.controls button{min-width:145px;padding:14px 18px}.controls .primary{background:linear-gradient(145deg,#49236b,#241333);border-color:#a978e8;box-shadow:0 0 22px rgba(139,75,208,.18)}
@@ -36,8 +40,8 @@
     .panel{padding:20px;margin:16px 0;text-align:left}.panel h3{color:#d8b5ff;margin:0 0 10px;font-weight:500}.panel p{color:#d3c8df;font-size:14px;line-height:1.6}.auth-panel{max-width:430px;margin:50px auto}.auth-panel label,.memory-form label{color:#d3c8df;font-size:13px;display:block;margin-top:10px}.auth-panel button{width:100%;margin-top:12px}.auth-message{min-height:22px;color:#ffb4c0;font-size:13px;line-height:1.4}
     #modelStatus{color:var(--muted);font-size:11px;text-align:center;margin:12px 0}.memory-note{color:var(--muted);font-size:12px;line-height:1.5}.memory-form select,.memory-form textarea{font:inherit}.memory-form textarea{min-height:85px;resize:vertical}#memoryList{max-height:420px;overflow-y:auto}.memory-item{background:rgba(20,10,30,.72);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;overflow-wrap:anywhere}.memory-item h4{color:#e6c6ff;margin:0 0 6px}.memory-meta{color:var(--muted);font-size:11px;margin-bottom:7px}.memory-content{color:#eee5f5;font-size:13px;line-height:1.5;white-space:pre-wrap}.memory-status{color:#ffd58a;font-size:11px;margin-top:8px}.memory-status.approved{color:var(--green)}.memory-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.memory-actions button{flex:1 1 100px;padding:10px;font-size:12px}.memory-notice{border:1px solid #a978e8;background:rgba(86,35,120,.28);border-radius:14px;padding:13px;margin:12px auto;max-width:680px;color:#f0ddff;text-align:left;font-size:13px;line-height:1.5}.memory-notice button{width:100%;margin-top:9px;padding:10px}.memory-status.approved{color:var(--green)}#memoryPanel{margin-top:16px}#toggleMemoryButton{margin-top:5px}.footer{color:#8f7da3;font-size:11px;text-align:center;margin:25px 0 5px}.account-bar button{flex:0 0 auto}
     [hidden]{display:none!important}
-    @media(min-width:800px){.dashboard{padding-top:30px}.hero{min-height:420px}.core{width:270px;height:270px}.core-orb{width:190px;height:190px}.reply-card{padding:18px 22px}.nav{justify-content:space-evenly}}
-    @media(max-width:520px){body{padding:12px 10px 24px}.topbar{padding:10px 12px;border-radius:16px}.brand-mark{width:36px;height:36px}.brand h1{letter-spacing:3px}.top-meta{font-size:10px}.hero{min-height:330px;padding-top:14px}.core{width:205px;height:205px;margin-bottom:15px}.core-orb{width:145px;height:145px}.reply-card{padding:13px}.controls{gap:8px}.controls button{min-width:calc(50% - 8px);flex:1}.nav{gap:2px;padding:8px}.nav button{padding:9px 8px;font-size:12px}.panel{padding:15px}.input-area button{min-width:76px;padding:11px 12px}}
+    @media(min-width:800px){.dashboard{padding-top:30px}.hero{min-height:420px}.core{width:290px;height:290px}.reply-card{padding:18px 22px}.nav{justify-content:space-evenly}}
+    @media(max-width:520px){body{padding:12px 10px 24px}.topbar{padding:10px 12px;border-radius:16px}.brand-mark{width:36px;height:36px}.brand h1{letter-spacing:3px}.top-meta{font-size:10px}.hero{min-height:330px;padding-top:14px}.core{width:220px;height:220px;margin-bottom:12px}.reply-card{padding:13px}.controls{gap:8px}.controls button{min-width:calc(50% - 8px);flex:1}.nav{gap:2px;padding:8px}.nav button{padding:9px 8px;font-size:12px}.panel{padding:15px}.input-area button{min-width:76px;padding:11px 12px}}
   </style>
 </head>
 
@@ -65,7 +69,7 @@
     <section id="assistantPanel" class="dashboard" hidden>
       <div class="account-bar"><span id="accountEmail"></span><button type="button" id="logoutButton">Cerrar sesión</button></div>
       <div class="hero">
-        <div class="core" aria-label="Núcleo energético de JARVIS"><div class="core-orb"></div></div>
+        <div class="core" id="jarvisCore" aria-label="Núcleo holográfico bidimensional de JARVIS"><div class="core-orb"><canvas id="coreCanvas" aria-hidden="true"></canvas></div></div>
         <div class="core-state" id="coreState">● Sistema en reposo</div>
         <h2 class="welcome">A su disposición, jefe.</h2>
         <p class="subtitle">¿En qué puedo ayudarle hoy?</p>
@@ -523,6 +527,87 @@
       });
     }
 
+    // Núcleo holográfico 2D: malla de partículas orgánica, sin geometría 3D.
+    const jarvisCore = document.getElementById("jarvisCore");
+    const coreCanvas = document.getElementById("coreCanvas");
+    const coreCtx = coreCanvas ? coreCanvas.getContext("2d") : null;
+    let coreMode = "idle";
+    let coreFrame = 0;
+    let coreWidth = 0;
+    let coreHeight = 0;
+    function setCoreMode(mode, label) {
+      coreMode = mode;
+      if (jarvisCore) jarvisCore.classList.remove("listening", "processing", "speaking");
+      if (jarvisCore && mode !== "idle") jarvisCore.classList.add(mode);
+      const state = document.getElementById("coreState");
+      if (state && label) state.textContent = label;
+    }
+    function resizeCore() {
+      if (!coreCanvas || !coreCtx) return;
+      const rect = coreCanvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      coreWidth = Math.max(1, rect.width);
+      coreHeight = Math.max(1, rect.height);
+      coreCanvas.width = Math.round(coreWidth * dpr);
+      coreCanvas.height = Math.round(coreHeight * dpr);
+      coreCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function drawCore() {
+      if (!coreCtx || !coreWidth || !coreHeight) return;
+      const ctx = coreCtx, w = coreWidth, h = coreHeight;
+      const t = performance.now() * 0.00045;
+      const cx = w / 2, cy = h / 2, radius = Math.min(w, h) * 0.405;
+      const boost = coreMode === "speaking" ? 1.75 : coreMode === "processing" ? 1.42 : coreMode === "listening" ? 1.25 : 1;
+      ctx.clearRect(0, 0, w, h);
+      const rows = 29, cols = 29, pts = [];
+      for (let j = 0; j < rows; j++) {
+        pts[j] = [];
+        const ny = (j / (rows - 1)) * 2 - 1;
+        for (let i = 0; i < cols; i++) {
+          const nx = (i / (cols - 1)) * 2 - 1;
+          const d = Math.hypot(nx, ny);
+          if (d > 1) { pts[j][i] = null; continue; }
+          const angle = Math.atan2(ny, nx);
+          const wave = Math.sin(angle * 3.2 + t * 2.1 + d * 5) * 0.035 + Math.sin(angle * 5 - t * 1.4) * 0.018 + Math.sin(d * 13 - t * 3) * 0.012;
+          const edge = Math.pow(Math.max(0, 1 - d * d), .42);
+          const r = radius * (1 + wave * boost);
+          const x = cx + nx * r + Math.sin(t * 2 + ny * 5) * 1.6 * boost;
+          const y = cy + ny * r + Math.cos(t * 1.7 + nx * 4) * 1.6 * boost;
+          pts[j][i] = {x,y,a:edge};
+        }
+      }
+      ctx.lineWidth = .55;
+      for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+        const p = pts[j][i]; if (!p) continue;
+        const right = pts[j][i+1], down = pts[j+1]?.[i];
+        if (right) { ctx.strokeStyle = `rgba(172,112,255,${(.10 + p.a*.18)*boost})`; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(right.x,right.y); ctx.stroke(); }
+        if (down) { ctx.strokeStyle = `rgba(133,78,224,${(.08 + p.a*.15)*boost})`; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(down.x,down.y); ctx.stroke(); }
+      }
+      for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+        const p = pts[j][i]; if (!p) continue;
+        const flicker = .55 + .45 * Math.sin(t * 8 + i * 1.7 + j * 2.3);
+        const sparkle = Math.pow(Math.max(0, Math.sin(t * 3 + i * .8 - j * .55)), 12);
+        const alpha = Math.min(1, (.18 + p.a * .62 + sparkle * .5) * boost * flicker);
+        const size = .55 + p.a * .8 + sparkle * 1.9 * boost;
+        ctx.beginPath(); ctx.fillStyle = `rgba(${sparkle > .75 ? '235,211,255' : '181,126,255'},${alpha})`;
+        ctx.shadowBlur = sparkle > .8 ? 10 * boost : 3;
+        ctx.shadowColor = "rgba(176,112,255,.9)";
+        ctx.arc(p.x,p.y,size,0,Math.PI*2); ctx.fill();
+      }
+      ctx.shadowBlur = 0;
+      // Destellos que recorren el contorno cuando JARVIS habla.
+      if (coreMode === "speaking" || coreMode === "processing") {
+        for (let k = 0; k < (coreMode === "speaking" ? 8 : 4); k++) {
+          const a = t * (coreMode === "speaking" ? 2.8 : 1.5) + k * Math.PI * 2 / 8;
+          const x = cx + Math.cos(a) * radius * 1.02, y = cy + Math.sin(a) * radius * 1.02;
+          ctx.beginPath(); ctx.fillStyle = "rgba(239,218,255,.9)"; ctx.shadowBlur = 15; ctx.shadowColor = "#b77cff"; ctx.arc(x,y,1.5 + boost,0,Math.PI*2); ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+      }
+      coreFrame = requestAnimationFrame(drawCore);
+    }
+    if (coreCanvas && coreCtx) { resizeCore(); window.addEventListener("resize", resizeCore); drawCore(); }
+
     async function sendMessage() {
       if (sending || !currentUser) return;
 
@@ -531,8 +616,7 @@
 
       sending = true;
       sendButton.disabled = true;
-      const coreState = document.getElementById("coreState");
-      if (coreState) coreState.textContent = "◌ Procesando solicitud";
+      setCoreMode("processing", "◌ Procesando solicitud");
       input.value = "";
       addMessage("Jefe: " + text);
 
@@ -585,12 +669,12 @@
 
         processing.remove();
         addMessage("JARVIS: " + data.reply);
-        if (coreState) coreState.textContent = "● Sistema en reposo";
+        setCoreMode("idle", "● Sistema en reposo");
       } catch (error) {
         console.error("Error de JARVIS:", error);
         processing.remove();
         addMessage("JARVIS: " + (error.message || "No pude conectarme. Inténtelo nuevamente."));
-        if (coreState) coreState.textContent = "● Sistema en reposo";
+        setCoreMode("idle", "● Sistema en reposo");
       } finally {
         sending = false;
         sendButton.disabled = false;
@@ -618,6 +702,10 @@
 
       speech.lang = "es-AR";
       speech.rate = 0.9;
+      speech.onstart = () => setCoreMode("speaking", "◉ JARVIS está hablando");
+      speech.onend = () => setCoreMode("idle", "● Sistema en reposo");
+      speech.onerror = () => setCoreMode("idle", "● Sistema en reposo");
+      window.speechSynthesis.cancel();
       window.speechSynthesis.speak(speech);
     }
 
@@ -631,6 +719,8 @@
 
       const recognition = new Recognition();
       recognition.lang = "es-AR";
+      recognition.onstart = () => setCoreMode("listening", "◉ Escuchando...");
+      recognition.onend = () => { if (coreMode === "listening") setCoreMode("idle", "● Sistema en reposo"); };
 
       recognition.onresult = event => {
         input.value = event.results[0][0].transcript;
@@ -638,6 +728,7 @@
       };
 
       recognition.onerror = () => {
+        setCoreMode("idle", "● Sistema en reposo");
         addMessage("JARVIS: No pude reconocer el audio. Revisá los permisos del micrófono.");
       };
 
