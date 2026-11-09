@@ -1,5 +1,4 @@
-
-const CACHE_NAME = "jarvis-v0-4";
+const CACHE_NAME = "jarvis-v0-2";
 
 const FILES = [
   "./",
@@ -36,4 +35,3 @@ self.addEventListener("fetch", event => {
     })
   );
 });
-            
