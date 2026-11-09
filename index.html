@@ -42,6 +42,24 @@
     [hidden]{display:none!important}
     @media(min-width:800px){.dashboard{padding-top:30px}.hero{min-height:420px}.core{width:290px;height:290px}.reply-card{padding:18px 22px}.nav{justify-content:space-evenly}}
     @media(max-width:520px){body{padding:12px 10px 24px}.topbar{padding:10px 12px;border-radius:16px}.brand-mark{width:36px;height:36px}.brand h1{letter-spacing:3px}.top-meta{font-size:10px}.hero{min-height:330px;padding-top:14px}.core{width:220px;height:220px;margin-bottom:12px}.reply-card{padding:13px}.controls{gap:8px}.controls button{min-width:calc(50% - 8px);flex:1}.nav{gap:2px;padding:8px}.nav button{padding:9px 8px;font-size:12px}.panel{padding:15px}.input-area button{min-width:76px;padding:11px 12px}}
+
+    :root{--theme-bg:#080510;--theme-surface:#160d25;--theme-panel:#29143f;--theme-accent:#c084ff;--theme-accent-rgb:192,132,255}
+    body{background:radial-gradient(ellipse at 50% 22%,color-mix(in srgb,var(--theme-accent) 28%,#160a25) 0%,#160a25 42%,var(--theme-bg) 78%)}
+    .topbar,.nav{background:color-mix(in srgb,var(--theme-bg) 88%,transparent)}
+    .reply-card,.panel,.chat-drawer{background:color-mix(in srgb,var(--theme-surface) 88%,transparent);border-color:color-mix(in srgb,var(--theme-accent) 42%,transparent)}
+    button{background:linear-gradient(145deg,var(--theme-panel),var(--theme-surface));border-color:color-mix(in srgb,var(--theme-accent) 48%,transparent)}
+    button:hover,input:focus,textarea:focus,select:focus{border-color:var(--theme-accent)}
+    .controls .primary{background:linear-gradient(145deg,color-mix(in srgb,var(--theme-accent) 42%,var(--theme-panel)),var(--theme-surface));border-color:var(--theme-accent)}
+    .brand h1,.panel h3,.reply-label,.chat-drawer summary,.welcome{color:var(--theme-accent)}
+    .brand-mark,.reply-icon{border-color:var(--theme-accent);color:var(--theme-accent);box-shadow:0 0 18px color-mix(in srgb,var(--theme-accent) 40%,transparent)}
+    .appearance-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+    .color-setting{padding:12px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--theme-bg) 45%,transparent)}
+    .color-setting label{display:block;color:var(--text);font-size:12px;margin-bottom:7px}
+    .color-setting input[type=color]{height:42px;padding:4px;cursor:pointer;margin:0}
+    .preset-list{display:flex;gap:8px;flex-wrap:wrap}.preset-list button{flex:1 1 130px;padding:10px;font-size:12px}
+    .appearance-note{font-size:12px;color:var(--muted);line-height:1.5}
+    #resetAppearanceButton{margin-top:10px}
+    @media(max-width:520px){.appearance-grid{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 
@@ -69,7 +87,7 @@
     <section id="assistantPanel" class="dashboard" hidden>
       <div class="account-bar"><span id="accountEmail"></span><button type="button" id="logoutButton">Cerrar sesión</button></div>
       <div class="hero">
-        <div class="core" id="jarvisCore" aria-label="Núcleo holográfico bidimensional de JARVIS"><div class="core-orb"><canvas id="coreCanvas" aria-hidden="true"></canvas></div></div>
+        <div class="core" id="jarvisCore" aria-label="Aureola holográfica bidimensional de JARVIS con cinta de Möbius"><div class="core-orb"><canvas id="coreCanvas" aria-hidden="true"></canvas></div></div>
         <div class="core-state" id="coreState">● Sistema en reposo</div>
         <h2 class="welcome">A su disposición, jefe.</h2>
         <p class="subtitle">¿En qué puedo ayudarle hoy?</p>
@@ -94,9 +112,32 @@
 
       <nav class="nav" aria-label="Secciones de JARVIS">
         <button type="button" id="toggleMemoryButton">◉ Memoria</button>
+        <button type="button" id="toggleAppearanceButton">⚙ Configuración</button>
         <button type="button" onclick="document.getElementById('modelStatus').scrollIntoView({behavior:'smooth',block:'center'})">⚙ Estado</button>
         <button type="button" onclick="document.getElementById('profilePanel').hidden = !document.getElementById('profilePanel').hidden">ⓘ Acerca de</button>
       </nav>
+
+
+      <section class="panel" id="appearancePanel" hidden>
+        <h3>⚙ Configuración de interfaz</h3>
+        <p class="appearance-note">Elegí una combinación predeterminada o ajustá los cuatro colores por separado. Los cambios se aplican al instante y quedan guardados en este dispositivo.</p>
+        <div class="appearance-grid">
+          <div class="color-setting"><label for="colorBackground">1. Fondo general</label><input type="color" id="colorBackground" value="#080510"></div>
+          <div class="color-setting"><label for="colorSurface">2. Superficies y navegación</label><input type="color" id="colorSurface" value="#160d25"></div>
+          <div class="color-setting"><label for="colorPanels">3. Paneles y botones</label><input type="color" id="colorPanels" value="#29143f"></div>
+          <div class="color-setting"><label for="colorAccent">4. Núcleo holográfico y acentos</label><input type="color" id="colorAccent" value="#c084ff"></div>
+        </div>
+        <h3 style="margin-top:18px">Temas predeterminados</h3>
+        <div class="preset-list" id="themePresets">
+          <button type="button" data-theme="midnight">Midnight Purple</button>
+          <button type="button" data-theme="cyber">Cyber Blue</button>
+          <button type="button" data-theme="emerald">Emerald</button>
+          <button type="button" data-theme="iron">Iron Core</button>
+          <button type="button" data-theme="titanium">Titanium</button>
+        </div>
+        <p class="appearance-note" id="appearanceMessage" role="status">Tema actual: Midnight Purple.</p>
+        <button type="button" id="resetAppearanceButton">Restaurar apariencia original</button>
+      </section>
 
       <section class="panel" id="memoryPanel" hidden>
         <h3>◈ Memoria permanente</h3>
@@ -121,7 +162,7 @@
         <div class="chat-content"><div id="messages" aria-live="polite"></div><div class="input-area"><input id="userInput" type="text" placeholder="Escribí un mensaje..." autocomplete="off"><button type="button" id="sendButton" onclick="sendMessage()">Enviar</button></div></div>
       </details>
     </section>
-    <footer class="footer">JARVIS · Versión 0.3 · Prototipo en desarrollo</footer>
+    <footer class="footer">JARVIS · Versión 0.4 · Personalización de apariencia</footer>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -175,6 +216,73 @@
     let sending = false;
     let STORAGE_KEY = "";
     let INTERACTION_KEY = "";
+
+
+    // Personalización visual: cuatro colores, cinco temas y persistencia local.
+    const toggleAppearanceButton = document.getElementById("toggleAppearanceButton");
+    const appearancePanel = document.getElementById("appearancePanel");
+    const appearanceMessage = document.getElementById("appearanceMessage");
+    const appearanceInputs = {
+      background: document.getElementById("colorBackground"),
+      surface: document.getElementById("colorSurface"),
+      panels: document.getElementById("colorPanels"),
+      accent: document.getElementById("colorAccent")
+    };
+    const APPEARANCE_KEY = "jarvis_appearance_v1";
+    const DEFAULT_THEME = { background: "#080510", surface: "#160d25", panels: "#29143f", accent: "#c084ff" };
+    const PRESET_THEMES = {
+      midnight: { name: "Midnight Purple", background: "#080510", surface: "#160d25", panels: "#29143f", accent: "#c084ff" },
+      cyber: { name: "Cyber Blue", background: "#050b14", surface: "#0b1c2c", panels: "#123b55", accent: "#35c8ff" },
+      emerald: { name: "Emerald", background: "#050e0b", surface: "#0d2119", panels: "#164331", accent: "#45e0a0" },
+      iron: { name: "Iron Core", background: "#100807", surface: "#28110e", panels: "#542018", accent: "#ff6848" },
+      titanium: { name: "Titanium", background: "#090b10", surface: "#1b2029", panels: "#343d4b", accent: "#c5d5e8" }
+    };
+    function hexToRgb(hex) {
+      const value = String(hex || "").replace("#", "");
+      const n = parseInt(value, 16);
+      return /^[0-9a-fA-F]{6}$/.test(value) && Number.isFinite(n) ? `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}` : "192,132,255";
+    }
+    function applyAppearance(theme, save = true, label = "Personalizado") {
+      const safe = {};
+      for (const key of Object.keys(DEFAULT_THEME)) safe[key] = /^#[0-9a-fA-F]{6}$/.test(theme?.[key] || "") ? theme[key] : DEFAULT_THEME[key];
+      const root = document.documentElement;
+      root.style.setProperty("--theme-bg", safe.background);
+      root.style.setProperty("--theme-surface", safe.surface);
+      root.style.setProperty("--theme-panel", safe.panels);
+      root.style.setProperty("--theme-accent", safe.accent);
+      root.style.setProperty("--theme-accent-rgb", hexToRgb(safe.accent));
+      root.style.setProperty("--bg", safe.background);
+      root.style.setProperty("--panel", safe.surface);
+      root.style.setProperty("--panel2", safe.background);
+      root.style.setProperty("--line", `rgba(${hexToRgb(safe.accent)},.38)`);
+      root.style.setProperty("--violet", safe.accent);
+      root.style.setProperty("--glow", safe.accent);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", safe.background);
+      Object.entries(appearanceInputs).forEach(([key, control]) => { control.value = safe[key]; });
+      if (appearanceMessage) appearanceMessage.textContent = `Tema actual: ${label}. Los cambios se guardaron en este dispositivo.`;
+      if (save) { try { localStorage.setItem(APPEARANCE_KEY, JSON.stringify({ ...safe, label })); } catch (error) { console.warn("No pude guardar la apariencia:", error); } }
+      if (typeof drawCore === "function" && coreCtx) drawCore();
+    }
+    function loadAppearance() {
+      try { const saved = JSON.parse(localStorage.getItem(APPEARANCE_KEY) || "null"); if (saved && typeof saved === "object") { applyAppearance(saved, false, saved.label || "Personalizado"); return; } }
+      catch (error) { console.warn("No pude leer la apariencia guardada:", error); }
+      applyAppearance(DEFAULT_THEME, false, "Midnight Purple");
+    }
+    toggleAppearanceButton.addEventListener("click", () => {
+      appearancePanel.hidden = !appearancePanel.hidden;
+      toggleAppearanceButton.textContent = appearancePanel.hidden ? "◈ Apariencia" : "Cerrar apariencia";
+      if (!appearancePanel.hidden) appearancePanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    Object.entries(appearanceInputs).forEach(([key, control]) => control.addEventListener("input", () => {
+      const selected = {}; Object.entries(appearanceInputs).forEach(([name, item]) => { selected[name] = item.value; });
+      applyAppearance(selected, true, "Personalizado");
+    }));
+    document.getElementById("themePresets").addEventListener("click", event => {
+      const button = event.target.closest("button[data-theme]"); if (!button) return;
+      const preset = PRESET_THEMES[button.dataset.theme]; if (preset) applyAppearance(preset, true, preset.name);
+    });
+    document.getElementById("resetAppearanceButton").addEventListener("click", () => applyAppearance(DEFAULT_THEME, true, "Midnight Purple"));
+    loadAppearance();
 
     function setUserStorage(userId) {
       STORAGE_KEY = "jarvis_conversation_" + userId;
@@ -527,7 +635,8 @@
       });
     }
 
-    // Núcleo holográfico 2D: malla de partículas orgánica, sin geometría 3D.
+    // Núcleo holográfico 2D: aureola inspirada en una cinta de Möbius.
+    // Es una ilustración plana hecha con líneas; no usa WebGL ni un objeto 3D.
     const jarvisCore = document.getElementById("jarvisCore");
     const coreCanvas = document.getElementById("coreCanvas");
     const coreCtx = coreCanvas ? coreCanvas.getContext("2d") : null;
@@ -555,105 +664,107 @@
     function drawCore() {
       if (!coreCtx || !coreWidth || !coreHeight) return;
       const ctx = coreCtx, w = coreWidth, h = coreHeight;
-      const t = performance.now() * 0.00045;
-      const cx = w / 2, cy = h / 2, radius = Math.min(w, h) * 0.365;
-      const boost = coreMode === "speaking" ? 1.8 : coreMode === "processing" ? 1.45 : coreMode === "listening" ? 1.28 : 1;
-      const speed = coreMode === "speaking" ? 1.8 : coreMode === "processing" ? 1.35 : coreMode === "listening" ? 1.12 : 0.72;
+      const t = performance.now() * 0.00038;
+      const cx = w / 2, cy = h / 2;
+      const rx = Math.min(w * 0.39, h * 0.43);
+      const ry = rx * 0.53;
+      const band = Math.min(w, h) * 0.105;
+      const boost = coreMode === "speaking" ? 1.75 : coreMode === "processing" ? 1.45 : coreMode === "listening" ? 1.25 : 1;
+      const speed = coreMode === "speaking" ? 1.8 : coreMode === "processing" ? 1.35 : coreMode === "listening" ? 1.12 : 0.62;
+      const accentRgb = getComputedStyle(document.documentElement).getPropertyValue("--theme-accent-rgb").trim() || "192,132,255";
       ctx.clearRect(0, 0, w, h);
 
-      // Núcleo 2D: cintas de líneas curvas que fluyen dentro de un contorno circular.
-      // No hay coordenadas 3D, perspectiva, profundidad ni rotación de una esfera.
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.clip();
-
-      // Halo interior suave.
-      const halo = ctx.createRadialGradient(cx, cy, radius * 0.12, cx, cy, radius * 1.05);
-      halo.addColorStop(0, `rgba(170,85,255,${0.12 * boost})`);
-      halo.addColorStop(0.72, `rgba(135,55,225,${0.17 * boost})`);
+      // Resplandor amplio detrás de la aureola.
+      const halo = ctx.createRadialGradient(cx, cy, band * 0.15, cx, cy, rx * 1.25);
+      halo.addColorStop(0, `rgba(${accentRgb},${0.15 * boost})`);
+      halo.addColorStop(0.58, `rgba(${accentRgb},${0.12 * boost})`);
       halo.addColorStop(1, "rgba(70,25,120,0)");
       ctx.fillStyle = halo;
-      ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+      ctx.fillRect(0, 0, w, h);
 
-      // Malla horizontal: líneas finas, ondulantes y ligeramente desfasadas.
-      const lineCount = 30;
-      for (let j = 0; j < lineCount; j++) {
-        const base = -radius * 0.91 + (radius * 1.82 * j) / (lineCount - 1);
-        const edge = Math.sqrt(Math.max(0, 1 - (base / radius) ** 2));
+      // Proyección gráfica plana de una cinta de Möbius: el giro se sugiere
+      // mediante el cruce de la banda y el cambio gradual de sus contornos.
+      // No se calcula ni se representa profundidad tridimensional.
+      function point(a, v, phase = 0) {
+        const twist = a * 0.5 + phase;
+        const width = v * band * Math.cos(twist);
+        const lift = v * band * 0.58 * Math.sin(twist);
+        const wobble = Math.sin(a * 2 + t * speed + phase) * band * 0.045;
+        const x = cx + (rx + width) * Math.cos(a) + wobble * Math.cos(a * 2.4);
+        const y = cy + (ry + width * 0.48) * Math.sin(a) + lift + wobble * Math.sin(a * 1.7);
+        return [x, y];
+      }
+
+      // Bandas longitudinales: líneas continuas que recorren la cinta.
+      const contourCount = 19;
+      for (let j = 0; j < contourCount; j++) {
+        const v = -0.92 + (1.84 * j) / (contourCount - 1);
         ctx.beginPath();
-        for (let step = 0; step <= 150; step++) {
-          const nx = -1 + (step / 150) * 2;
-          const x = cx + nx * radius;
-          const envelope = Math.sqrt(Math.max(0, 1 - nx * nx));
-          const waveA = Math.sin(nx * 5.2 + t * speed * 2.1 + j * 0.19) * radius * 0.075;
-          const waveB = Math.sin(nx * 10.5 - t * speed * 1.35 + j * 0.31) * radius * 0.022;
-          const drift = Math.sin(t * speed * 1.1 + j * 0.42) * radius * 0.018;
-          const y = cy + base * envelope + (waveA + waveB + drift) * edge;
-          if (step === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        const steps = 260;
+        for (let i = 0; i <= steps; i++) {
+          const a = (i / steps) * Math.PI * 4;
+          const [x, y] = point(a, v, j * 0.012);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        const shimmer = 0.5 + 0.5 * Math.sin(t * 2.2 + j * 0.37);
-        ctx.lineWidth = j % 5 === 0 ? 1.45 : 0.9;
-        ctx.strokeStyle = `rgba(${j % 5 === 0 ? '231,200,255' : '184,125,255'},${(0.27 + shimmer * 0.22) * boost})`;
-        ctx.shadowBlur = (j % 5 === 0 ? 18 : 10) * boost;
-        ctx.shadowColor = "rgba(190,125,255,1)";
+        const highlight = j === 2 || j === 9 || j === 16;
+        const shimmer = 0.72 + 0.28 * Math.sin(t * 2.1 + j * 0.46);
+        ctx.lineWidth = highlight ? 1.65 : 0.82;
+        ctx.strokeStyle = `rgba(${accentRgb},${(highlight ? 0.92 : 0.53) * shimmer * boost})`;
+        ctx.shadowBlur = (highlight ? 22 : 11) * boost;
+        ctx.shadowColor = `rgba(${accentRgb},0.95)`;
         ctx.stroke();
       }
 
-      // Cintas diagonales cruzadas: dan energía y movimiento sin simular volumen.
-      for (let band = 0; band < 9; band++) {
+      // Nervaduras transversales que hacen visible la banda, no una esfera.
+      for (let j = 0; j < 42; j++) {
+        const a = (j / 42) * Math.PI * 2 + t * speed * 0.12;
         ctx.beginPath();
-        const phase = t * speed * (band % 2 ? 1.45 : -1.2) + band * 0.72;
-        for (let step = 0; step <= 180; step++) {
-          const u = -1 + (step / 180) * 2;
-          const x = cx + u * radius;
-          const envelope = Math.sqrt(Math.max(0, 1 - u * u));
-          const carrier = Math.sin(u * 3.5 + phase) * radius * 0.22;
-          const fine = Math.sin(u * 8.2 - phase * 0.7) * radius * 0.035;
-          const offset = (band - 4) * radius * 0.105;
-          const y = cy + (offset + carrier + fine) * envelope;
-          if (step === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        for (let k = 0; k <= 28; k++) {
+          const v = -1 + (k / 28) * 2;
+          const [x, y] = point(a, v, 0);
+          if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        const bright = band === 2 || band === 6;
-        ctx.lineWidth = bright ? 1.8 : 1.0;
-        ctx.strokeStyle = bright
-          ? `rgba(239,211,255,${0.66 * boost})`
-          : `rgba(174,105,255,${0.32 * boost})`;
-        ctx.shadowBlur = (bright ? 24 : 12) * boost;
-        ctx.shadowColor = "rgba(195,130,255,1)";
+        ctx.lineWidth = j % 7 === 0 ? 1.15 : 0.58;
+        ctx.strokeStyle = `rgba(${accentRgb},${(j % 7 === 0 ? 0.58 : 0.22) * boost})`;
+        ctx.shadowBlur = j % 7 === 0 ? 12 * boost : 4;
+        ctx.shadowColor = `rgba(${accentRgb},0.85)`;
         ctx.stroke();
       }
-      ctx.restore();
+
+      // El cruce central se enfatiza con dos trazos luminosos que se deslizan.
+      for (let k = 0; k < 2; k++) {
+        const a = Math.PI * (0.34 + k * 0.68) + Math.sin(t * speed * 0.8) * 0.08;
+        ctx.beginPath();
+        for (let i = 0; i <= 50; i++) {
+          const v = -0.98 + (i / 50) * 1.96;
+          const [x, y] = point(a + (i / 50 - 0.5) * 0.16, v, 0);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.lineWidth = 2.1;
+        ctx.strokeStyle = `rgba(${accentRgb},${0.78 * boost})`;
+        ctx.shadowBlur = 25 * boost;
+        ctx.shadowColor = `rgba(${accentRgb},1)`;
+        ctx.stroke();
+      }
       ctx.shadowBlur = 0;
 
-      // Borde circular luminoso, plano y delicado.
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius * 0.985, 0, Math.PI * 2);
-      ctx.lineWidth = 1.8;
-      ctx.strokeStyle = `rgba(220,175,255,${0.78 * boost})`;
-      ctx.shadowBlur = 28 * boost;
-      ctx.shadowColor = "rgba(169,103,255,.95)";
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      // Destellos lineales recorren el núcleo al procesar o hablar; sin partículas.
+      // Destellos lineales recorren la aureola al escuchar, procesar o hablar.
       if (coreMode === "speaking" || coreMode === "processing" || coreMode === "listening") {
-        const count = coreMode === "speaking" ? 5 : coreMode === "processing" ? 3 : 2;
+        const count = coreMode === "speaking" ? 6 : coreMode === "processing" ? 4 : 2;
         for (let k = 0; k < count; k++) {
-          const u = ((t * speed * 0.42 + k / count) % 1) * 2 - 1;
-          const x = cx + u * radius * 0.88;
-          const y = cy + Math.sin(t * speed * 2 + k * 1.7) * radius * 0.34;
+          const a = (t * speed * 0.42 + (k / count) * Math.PI * 2) % (Math.PI * 2);
+          const [x, y] = point(a, Math.sin(t * speed + k) * 0.62, 0);
           ctx.beginPath();
-          ctx.moveTo(x - 8, y - 2);
-          ctx.lineTo(x + 8, y + 2);
-          ctx.lineWidth = 1.6;
-          ctx.strokeStyle = "rgba(245,225,255,.88)";
-          ctx.shadowBlur = 15;
-          ctx.shadowColor = "#bd83ff";
+          ctx.moveTo(x - 7, y - 2);
+          ctx.lineTo(x + 7, y + 2);
+          ctx.lineWidth = 1.8;
+          ctx.strokeStyle = "rgba(250,235,255,.95)";
+          ctx.shadowBlur = 17;
+          ctx.shadowColor = `rgba(${accentRgb},1)`;
           ctx.stroke();
         }
-        ctx.shadowBlur = 0;
       }
+      ctx.shadowBlur = 0;
       coreFrame = requestAnimationFrame(drawCore);
     }
     if (coreCanvas && coreCtx) { resizeCore(); window.addEventListener("resize", resizeCore); drawCore(); }
