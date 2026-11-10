@@ -568,7 +568,6 @@ const server = http.createServer(async (req, res) => {
           const requestBody = {
             model,
             tools: [
-  { type: "google_search" },
   { type: "url_context" }
 ],
             input:
