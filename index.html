@@ -755,177 +755,188 @@ if (window.supabase) {
     }
 
 
-    // Núcleo holográfico 2D: orbe circular de energía.
-    // Superficie continua, sin líneas ni estructuras geométricas.
-        const jarvisCore = document.getElementById("jarvisCore");
-    const coreCanvas = document.getElementById("coreCanvas");
-    const coreCtx = coreCanvas ? coreCanvas.getContext("2d") : null;
+    
+// NÚCLEO HOLOGRÁFICO 2D — JARVIS
 
-    let coreMode = "idle";
-    let coreFrame = 0;
-    let coreWidth = 0;
-    let coreHeight = 0;
+const jarvisCore = document.getElementById("jarvisCore");
+const coreCanvas = document.getElementById("coreCanvas");
+const coreCtx = coreCanvas ? coreCanvas.getContext("2d") : null;
 
-    function setCoreMode(mode, label) {
-      coreMode = mode;
+let coreMode = "idle";
+let coreFrame = 0;
+let coreWidth = 0;
+let coreHeight = 0;
 
-      if (jarvisCore) {
-        jarvisCore.classList.remove("listening", "processing", "speaking");
-        if (mode !== "idle") jarvisCore.classList.add(mode);
-      }
+function setCoreMode(mode, label) {
+  coreMode = mode;
 
-      const state = document.getElementById("coreState");
-      if (state && label) state.textContent = label;
-    }
+  if (jarvisCore) {
+    jarvisCore.classList.remove(
+      "listening", "processing", "speaking"
+    );
+    if (mode !== "idle") jarvisCore.classList.add(mode);
+  }
 
-    function resizeCore() {
-      if (!coreCanvas || !coreCtx) return;
+  const state = document.getElementById("coreState");
+  if (state && label) state.textContent = label;
+}
 
-      const rect = coreCanvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+function resizeCore() {
+  if (!coreCanvas || !coreCtx) return;
 
-      coreWidth = Math.max(1, rect.width);
-      coreHeight = Math.max(1, rect.height);
+  const rect = coreCanvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-      coreCanvas.width = Math.round(coreWidth * dpr);
-      coreCanvas.height = Math.round(coreHeight * dpr);
+  coreWidth = Math.max(1, rect.width);
+  coreHeight = Math.max(1, rect.height);
 
-      coreCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
+  coreCanvas.width = Math.round(coreWidth * dpr);
+  coreCanvas.height = Math.round(coreHeight * dpr);
 
-    function drawCore() {
-      if (!coreCtx || !coreWidth || !coreHeight) return;
+  coreCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
 
-      const ctx = coreCtx;
-      const w = coreWidth;
-      const h = coreHeight;
+function drawCore() {
+  if (!coreCtx || !coreWidth || !coreHeight) return;
 
-      const cx = w / 2;
-      const cy = h / 2;
-      const radius = Math.min(w, h) * 0.36;
+  const ctx = coreCtx;
+  const w = coreWidth;
+  const h = coreHeight;
+  const cx = w / 2;
+  const cy = h / 2;
+  const radius = Math.min(w, h) * 0.34;
+  const time = performance.now() * 0.001;
 
-      const time = performance.now() * 0.001;
+  const intensity =
+    coreMode === "speaking" ? 1.7 :
+    coreMode === "processing" ? 1.45 :
+    coreMode === "listening" ? 1.25 : 1;
 
-      const intensity =
-        coreMode === "speaking" ? 1.65 :
-        coreMode === "processing" ? 1.4 :
-        coreMode === "listening" ? 1.2 : 1;
+  const speed =
+    coreMode === "speaking" ? 1.8 :
+    coreMode === "processing" ? 1.35 :
+    coreMode === "listening" ? 0.9 : 0.35;
 
-      const speed =
-        coreMode === "speaking" ? 2.5 :
-        coreMode === "processing" ? 2.1 :
-        coreMode === "listening" ? 1.7 : 1.6;
+  const rotation = time * speed;
+  const pulse = 1 + Math.sin(time * 2) * 0.025 * intensity;
 
-      const rotation = time * speed;
-      const pulse = 1 + Math.sin(time * 1.8) * 0.025 * intensity;
+  const accent = getComputedStyle(document.documentElement)
+    .getPropertyValue("--theme-accent-rgb").trim() || "192,132,255";
 
-      const accent = getComputedStyle(document.documentElement)
-        .getPropertyValue("--theme-accent-rgb").trim() || "192,132,255";
+  ctx.clearRect(0, 0, w, h);
+  ctx.save();
+  ctx.translate(cx, cy);
 
-      ctx.clearRect(0, 0, w, h);
+  // Resplandor exterior
+  const glow = ctx.createRadialGradient(
+    0, 0, radius * 0.2,
+    0, 0, radius * 1.6
+  );
 
-      // Resplandor exterior.
-      const outerGlow = ctx.createRadialGradient(
-        cx, cy, radius * 0.2,
-        cx, cy, radius * 1.65
-      );
+  glow.addColorStop(0, `rgba(${accent},${0.25 * intensity})`);
+  glow.addColorStop(0.5, `rgba(${accent},${0.12 * intensity})`);
+  glow.addColorStop(1, "rgba(80,20,130,0)");
 
-      outerGlow.addColorStop(0, `rgba(${accent},${0.24 * intensity})`);
-      outerGlow.addColorStop(0.55, `rgba(${accent},${0.12 * intensity})`);
-      outerGlow.addColorStop(1, "rgba(70,25,120,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(-w / 2, -h / 2, w, h);
 
-      ctx.fillStyle = outerGlow;
-      ctx.fillRect(0, 0, w, h);
+  // Núcleo energético central
+  ctx.save();
+  ctx.scale(pulse, pulse);
 
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.scale(pulse, pulse);
+  const coreGlow = ctx.createRadialGradient(
+    -radius * 0.2, -radius * 0.25, radius * 0.02,
+    0, 0, radius * 0.75
+  );
 
-      // Silueta circular y superficie luminosa.
-      const orb = ctx.createRadialGradient(
-        -radius * 0.28, -radius * 0.35, radius * 0.04,
-        0, 0, radius * 1.05
-      );
+  coreGlow.addColorStop(0, "rgba(255,255,255,0.95)");
+  coreGlow.addColorStop(0.12, `rgba(${accent},0.9)`);
+  coreGlow.addColorStop(0.4, `rgba(${accent},0.42)`);
+  coreGlow.addColorStop(1, `rgba(${accent},0)`);
 
-      orb.addColorStop(0, `rgba(255,245,255,${0.95 * intensity})`);
-      orb.addColorStop(0.13, `rgba(${accent},${0.95 * intensity})`);
-      orb.addColorStop(0.42, `rgba(${accent},${0.72 * intensity})`);
-      orb.addColorStop(0.72, `rgba(${accent},0.30)`);
-      orb.addColorStop(1, `rgba(${accent},0.02)`);
+  ctx.fillStyle = coreGlow;
+  ctx.beginPath();
+  ctx.arc(0, 0, radius * 0.75, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
 
+  // Anillos concéntricos
+  function ring(r, width, alpha, direction, segments) {
+    ctx.save();
+    ctx.rotate(rotation * direction);
+    ctx.lineWidth = width;
+    ctx.strokeStyle = `rgba(${accent},${alpha * intensity})`;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = `rgba(${accent},0.9)`;
+
+    if (!segments) {
       ctx.beginPath();
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
-      ctx.fillStyle = orb;
-      ctx.fill();
-            // Todo el movimiento queda dentro del círculo.
-      ctx.save();
-
-      ctx.beginPath();
-      ctx.arc(0, 0, radius * 0.985, 0, Math.PI * 2);
-      ctx.clip();
-
-      ctx.globalCompositeOperation = "screen";
-
-      // Nubes luminosas que giran dentro del núcleo.
-      for (let i = 0; i < 4; i++) {
-        const angle = rotation + i * Math.PI * 0.5;
-
-        const x = Math.cos(angle) * radius * 0.38;
-        const y = Math.sin(angle) * radius * 0.38;
-
-        const cloud = ctx.createRadialGradient(
-          x, y, 0,
-          x, y, radius * 0.78
-        );
-
-        cloud.addColorStop(0, `rgba(255,245,255,${0.34 * intensity})`);
-        cloud.addColorStop(0.25, `rgba(${accent},${0.25 * intensity})`);
-        cloud.addColorStop(0.65, `rgba(${accent},0.10)`);
-        cloud.addColorStop(1, "rgba(255,255,255,0)");
-
-        ctx.fillStyle = cloud;
-        ctx.fillRect(
-          -radius * 1.2,
-          -radius * 1.2,
-          radius * 2.4,
-          radius * 2.4
-        );
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.stroke();
+    } else {
+      for (let i = 0; i < segments; i++) {
+        const start = (i / segments) * Math.PI * 2;
+        const end = start + (Math.PI * 2 / segments) * 0.65;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, start, end);
+        ctx.stroke();
       }
-
-      // Luz suave que acompaña el giro.
-      const highlightAngle = rotation * 0.7;
-
-      const hx = Math.cos(highlightAngle) * radius * 0.3;
-      const hy = Math.sin(highlightAngle) * radius * 0.3;
-
-      const highlight = ctx.createRadialGradient(
-        hx, hy, 0,
-        hx, hy, radius * 0.65
-      );
-
-      highlight.addColorStop(0, `rgba(255,255,255,${0.30 * intensity})`);
-      highlight.addColorStop(0.35, "rgba(255,235,255,0.12)");
-      highlight.addColorStop(1, "rgba(255,255,255,0)");
-
-      ctx.fillStyle = highlight;
-      ctx.fillRect(
-        -radius,
-        -radius,
-        radius * 2,
-        radius * 2
-      );
-
-      ctx.restore();
-      ctx.restore();
-
-      coreFrame = requestAnimationFrame(drawCore);
     }
 
-    if (coreCanvas && coreCtx) {
-      resizeCore();
-      window.addEventListener("resize", resizeCore);
-      drawCore();
-    }
+    ctx.restore();
+  }
+
+  ring(radius * 0.82, 1.5, 0.65, 1, 0);
+  ring(radius * 0.96, 2, 0.9, -0.65, 32);
+  ring(radius * 1.12, 1.2, 0.65, 0.45, 0);
+  ring(radius * 1.25, 2, 0.85, -0.35, 48);
+  ring(radius * 1.38, 1, 0.45, 0.2, 0);
+
+  // Marcas luminosas exteriores
+  ctx.save();
+  ctx.rotate(-rotation * 0.5);
+
+  for (let i = 0; i < 48; i++) {
+    const angle = (i / 48) * Math.PI * 2;
+    const inner = radius * 1.43;
+    const outer = inner + (i % 4 === 0 ? 9 : 3);
+
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
+    ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer);
+    ctx.lineWidth = i % 4 === 0 ? 2 : 1;
+    ctx.strokeStyle = `rgba(${accent},${i % 4 === 0 ? 0.9 : 0.35})`;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+
+  // Pequeños puntos orbitales
+  for (let i = 0; i < 6; i++) {
+    const angle = rotation * (i % 2 ? -1 : 1) + i * Math.PI / 3;
+    const orbit = radius * (1.05 + (i % 3) * 0.13);
+    const x = Math.cos(angle) * orbit;
+    const y = Math.sin(angle) * orbit;
+
+    ctx.beginPath();
+    ctx.arc(x, y, i % 2 ? 2 : 3, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,245,255,0.95)";
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = `rgba(${accent},1)`;
+    ctx.fill();
+  }
+
+  ctx.restore();
+
+  coreFrame = requestAnimationFrame(drawCore);
+}
+
+if (coreCanvas && coreCtx) {
+  resizeCore();
+  window.addEventListener("resize", resizeCore);
+  drawCore();
+}
+
 
     async function sendMessage() {
       if (sending || !currentUser) return;
