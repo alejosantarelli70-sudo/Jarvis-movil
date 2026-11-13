@@ -3,7 +3,8 @@ const http = require("http");
 const PORT = process.env.PORT || 3000;
 const FRONTENDS = [
   "https://alejosantarelli70-sudo.github.io",
-  "https://cuddly-rotary-phone-xr496wwx5wr52ppqq-8000.app.github.dev"
+  "https://cuddly-rotary-phone-xr496wwx5wr52ppqq-8000.app.github.dev",
+  "https://orange-tribble-q9p957p6xwv2xvqw-8000.app.github.dev"
 ];
 const SUPABASE_URL = (process.env.SUPABASE_URL || "").replace(/\/$/, "");
 const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || "";
