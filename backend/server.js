@@ -1,7 +1,10 @@
 const http = require("http");
 
 const PORT = process.env.PORT || 3000;
-const FRONTEND = "https://alejosantarelli70-sudo.github.io";
+const FRONTENDS = [
+  "https://alejosantarelli70-sudo.github.io",
+  "https://cuddly-rotary-phone-xr496wwx5wr52ppqq-8000.app.github.dev"
+];
 const SUPABASE_URL = (process.env.SUPABASE_URL || "").replace(/\/$/, "");
 const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || "";
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY || "";
@@ -294,7 +297,13 @@ function isValidText(value, maxLength) {
 const server = http.createServer(async (req, res) => {
   const route = (req.url || "").split("?")[0];
 
-  res.setHeader("Access-Control-Allow-Origin", FRONTEND);
+   const requestOrigin = req.headers.origin;
+  const originAllowed = !requestOrigin || FRONTENDS.includes(requestOrigin);
+
+  if (requestOrigin && originAllowed) {
+    res.setHeader("Access-Control-Allow-Origin", requestOrigin);
+  }
+
   res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -302,12 +311,16 @@ const server = http.createServer(async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
 
   if (req.method === "OPTIONS") {
+    if (!originAllowed) {
+      sendJson(res, 403, { error: "Origen no autorizado." });
+      return;
+    }
     res.writeHead(204);
     res.end();
     return;
   }
 
-  if (req.headers.origin && req.headers.origin !== FRONTEND) {
+  if (!originAllowed) {
     sendJson(res, 403, { error: "Origen no autorizado." });
     return;
   }
